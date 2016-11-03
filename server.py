@@ -1,38 +1,61 @@
+from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
+from model import connect_to_db, db, User, Cuisine, Rating, Restaurant, Comment, Bookmark
 
 #Settting up the back end routes.
 app = Flask(__name__)
-
 app.secret_key = "ABC"
-
 app.jinja_env.undefined = StrictUndefined
-
 
 
 @app.route("/")
 def index():
     """Homepage."""
 
-    return render_template("Homepage.html")
+    return render_template("homepage.html")
 
-@app.route("/login")
+
+@app.route("/login", methods=['GET', 'POST'])
 def login():
     """User login."""
 
-    return redirect("main.html")
+    if request.method == 'POST':
+        username = request.form["username"]
+        password = request.form["password"]
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            flash("User does not exist.")
+            return redirect("/profile/<int:user_id>")
+        if user.password != password:
+            flash("Incorrect password, please try again.")
+            return redirect("/login")
 
-@app.route("/register")
+        session["user_id"] = user.user_id
+        flash("You are now logged in.")
+
+        return redirect("/profile/%s" % user.user_id)
+
+    return render_template("login.html")
+
+
+@app.route("/register", methods=['POST'])
 def register_users():
     """Register new users."""
 
+
     return redirect("main.html")
+
 
 @app.route("/logout")
 def logout():
     """Log users out."""
 
-    return render_template("logout.html")
+    session.pop('logged_in', None)
+    flash('You were logged out')
+
+    return redirect("/")
+
 
 @app.route("/favlist")
 def save_restaurants():
@@ -40,11 +63,14 @@ def save_restaurants():
 
     pass
 
-@app.route("/profile")
-def display_profile():
+
+@app.route("/profile/<int:user_id>")
+def display_profile(user_id):
     """Display profile page for logged in users."""
 
-    pass
+    user = User.query.get(user_id)
+    return render_template("profile.html", user=user)
+
 
 @app.route("/main")
 def display_main():
@@ -54,11 +80,27 @@ def display_main():
 
     pass
 
+
+@app.route("/search-rest")
+def search_restaurant():
+    """This allows users to search restaurant and lead them to the restaurant_info page."""
+
+    pass
+
+
+@app.route("/search-user")
+def search_user():
+    """This lets user to look up other users and their profile page (logged in users only)."""
+
+    pass
+
+
 @app.route("/rating")
 def handle_rating():
     """Handling user ratings and save them into database."""
 
     pass
+
 
 @app.route("/comments")
 def handle_comments():
@@ -66,12 +108,25 @@ def handle_comments():
 
     pass
 
+
 @app.route("/restaurant_info")
 def display_restaurant():
     """Display restaurant information and show options of ratings and directions."""
 
     pass
 
+
+@app.route("/map")
+def show_map():
+    """Allow users to get the directional info from Google Map."""
+    pass
+
+
+# with app.test_request_context():
+#     print url_for('index')
+#     print url_for('login')
+#     # print url_for('login', next='/')
+#     # print url_for('profile', username='John Doe')
 
 ###############################################################################
 if __name__ == "__main__":
@@ -86,4 +141,4 @@ if __name__ == "__main__":
     # Use the DebugToolbar
     DebugToolbarExtension(app)
 
-    app.run()
+    app.run(host='0.0.0.0')
