@@ -17,7 +17,7 @@ def index():
 
 
 @app.route("/login", methods=['GET', 'POST'])
-def login():
+def login_user():
     """User login."""
 
     if request.method == 'POST':
@@ -26,32 +26,55 @@ def login():
         user = User.query.filter_by(username=username).first()
         if not user:
             flash("User does not exist.")
-            return redirect("/profile/<int:user_id>")
+            return redirect("/")
         if user.password != password:
             flash("Incorrect password, please try again.")
             return redirect("/login")
 
-        session["user_id"] = user.user_id
+        session["current_user"] = user.user_id
+        print session["current_user"]
         flash("You are now logged in.")
 
-        return redirect("/profile/%s" % user.user_id)
+        return redirect("/profile/%s" % user.username)
 
     return render_template("login.html")
 
 
-@app.route("/register", methods=['POST'])
+@app.route("/register", methods=['GET', 'POST'])
 def register_users():
     """Register new users."""
 
+    if request.method == 'POST':
+        username = request.form["username"]
+        fav_cuisine = request.form["fav-cuisine"]
+        fname = request.form["fname"]
+        lname = request.form["lname"]
+        password = request.form["password"]
+        # membership = record register day
 
-    return redirect("main.html")
+        exist_user = User.query.filter_by(username=username).first()
+        if exist_user is None:
+            new_user = User(username=username,
+                            password=password,
+                            fname=fname,
+                            lname=lname,
+                            fav_cuisine=fav_cuisine,
+                            # membership=registerdate
+                            )
+            db.session.add(new_user)
+            db.session.commit()
+
+        flash("Welcome, %s!" % fname)
+        return redirect("/profile/%s" % new_user.username)
+
+    return render_template("register.html")
 
 
-@app.route("/logout")
+@app.route("/logout", methods=['POST'])
 def logout():
     """Log users out."""
 
-    session.pop('logged_in', None)
+    session.pop('current_user', None)
     flash('You were logged out')
 
     return redirect("/")
@@ -64,11 +87,12 @@ def save_restaurants():
     pass
 
 
-@app.route("/profile/<int:user_id>")
-def display_profile(user_id):
+@app.route("/profile/<username>")
+def display_profile(username):
     """Display profile page for logged in users."""
 
-    user = User.query.get(user_id)
+    user = User.query.filter_by(username=username).first()
+    print '######################', user
     return render_template("profile.html", user=user)
 
 
@@ -141,4 +165,4 @@ if __name__ == "__main__":
     # Use the DebugToolbar
     DebugToolbarExtension(app)
 
-    app.run(host='0.0.0.0')
+    app.run(host="0.0.0.0")

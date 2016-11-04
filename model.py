@@ -5,7 +5,6 @@ db = SQLAlchemy()
 
 #Model definition
 
-
 class Cuisine(db.Model):
     """Cuisine types of Pocket Asia"""
 
@@ -25,17 +24,20 @@ class Restaurant(db.Model):
 
     restaurant_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
-    yelp_id = db.Column(db.String(100), nullable=False)
-    yelp_rating = db.Column(db.Integer, nullable=False)
+    yelp_id = db.Column(db.String(100), nullable=True, unique=True)
+    yelp_rating = db.Column(db.Integer, nullable=True)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    num_like = db.Column(db.Integer, nullable=True)
     cuisine_id = db.Column(db.Integer, db.ForeignKey('cuisine.cuisine_id'))
 
     #Defining relationship with comments and ratings table
 
     ratings = db.relationship('Rating', backref='restaurant')
+    likes = db.relationship('Popularity', backref='restaurant')
 
+    def num_like_calculator(self):
+        """returns number of likes for a restaurant"""
+        return len(self.likes)
 
 class User(db.Model):
     """Users of Pocket Asia."""
@@ -47,7 +49,7 @@ class User(db.Model):
     password = db.Column(db.String(65), nullable=False)
     fname = db.Column(db.String(50), nullable=True)
     lname = db.Column(db.String(50), nullable=True)
-    fav_cuisine = db.Column(db.String(40), nullable=True)
+    fav_cuisine = db.Column(db.String(40), nullable=False)
     last_login = db.Column(db.DateTime, nullable=True)
     membership = db.Column(db.DateTime, nullable=True)
 
@@ -93,6 +95,18 @@ class Bookmark(db.Model):
     restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.restaurant_id'))
 
 
+class Popularity(db.Model):
+    """Keep track of user likes."""
+
+    __tablename__ = "popularity"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.restaurant_id'))
+
+    users = db.relationship("User", backref='popularity')
+    restaurants = db.relationship("Restaurant", backref='popularity')
+
 ###################################################
 #Helper functions
 
@@ -100,7 +114,7 @@ def connect_to_db(app):
     """Connect the database to our Flask app."""
 
     # Configure to use our PostgreSQL database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pocketasia'
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///testdb"
     app.config['SQLALCHEMY_ECHO'] = True
     db.app = app
     db.init_app(app)
