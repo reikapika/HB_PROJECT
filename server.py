@@ -1,19 +1,34 @@
 from jinja2 import StrictUndefined
-from flask import Flask, render_template, request, flash, redirect, session
+import requests
+from flask import Flask, render_template, request, jsonify, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Cuisine, Rating, Restaurant, Comment, Bookmark
+from datetime import datetime
+import os
 
 #Settting up the back end routes.
 app = Flask(__name__)
 app.secret_key = "ABC"
-app.jinja_env.undefined = StrictUndefined
+
+
+APP_ID = os.environ['YELP_CONSUMER_KEY']
+APP_SECRET = os.environ['YELP_CONSUMER_SECRET']
+DATA = {'grant_type': 'client_credentials',
+        'client_id': APP_ID,
+        'client_secret': APP_SECRET}
 
 
 @app.route("/")
 def index():
     """Homepage."""
 
-    return render_template("homepage.html")
+    if "current_user" in session:
+        current_user_id = session["current_user"]
+        user = User.query.filter_by(user_id=current_user_id).first()
+        print "#######", user.username
+        return render_template("homepage.html", user=user)
+    else:
+        return render_template("homepage.html")
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -32,7 +47,7 @@ def login_user():
             return redirect("/login")
 
         session["current_user"] = user.user_id
-        print session["current_user"]
+
         flash("You are now logged in.")
 
         return redirect("/profile/%s" % user.username)
@@ -50,7 +65,8 @@ def register_users():
         fname = request.form["fname"]
         lname = request.form["lname"]
         password = request.form["password"]
-        # membership = record register day
+        membership = datetime.datetime.utcnow()
+        last_login = datetime.datetime.utcnow()
 
         exist_user = User.query.filter_by(username=username).first()
         if exist_user is None:
@@ -59,7 +75,8 @@ def register_users():
                             fname=fname,
                             lname=lname,
                             fav_cuisine=fav_cuisine,
-                            # membership=registerdate
+                            membership=membership,
+                            last_login=last_login
                             )
             db.session.add(new_user)
             db.session.commit()
@@ -92,7 +109,6 @@ def display_profile(username):
     """Display profile page for logged in users."""
 
     user = User.query.filter_by(username=username).first()
-    print '######################', user
     return render_template("profile.html", user=user)
 
 
@@ -105,11 +121,38 @@ def display_main():
     pass
 
 
-@app.route("/search-rest")
+@app.route("/search", methods=['POST'])
 def search_restaurant():
     """This allows users to search restaurant and lead them to the restaurant_info page."""
 
-    pass
+    user_input = request.form["search-form"]
+    exist_usernames = [t for t in (db.session.query(User.username).all())]
+    print '**************', exist_usernames
+    exist_restaurants = [t for t in db.session.query(Restaurant.name).all()]
+    print '**************', exist_restaurants
+    if (user_input,) in exist_usernames:
+        # if exist_user is not None:
+        #     print '**********', exist_user
+        exist_user = User.query.filter_by(username=user_input).first()
+        return redirect("/profile/%s" % exist_user.username)
+
+    else:
+        if (user_input,) in exist_restaurants:
+            exist_rest = Restaurant.query.filter_by(name=user_input).first()
+            if user_input == exist_rest.name:
+                rest_name = exist_rest.name
+                token = requests.post('https://api.yelp.com/oauth2/token', data=DATA)
+                access_token = token.json()['access_token']
+                headers = {'Authorization': 'bearer %s' % access_token}
+                url = "https://api.yelp.com/v3/businesses/"
+                resp = requests.get(url=url+exist_rest.yelp_id, headers=headers)
+                rest_info = resp.json()
+                print rest_name, type(rest_info)
+                return render_template("restaurant_info.html", rest_info=rest_info)
+        else:
+
+            flash("Sorry, I don't understand you. Please try again")
+            return redirect("/")
 
 
 @app.route("/search-user")
@@ -119,32 +162,67 @@ def search_user():
     pass
 
 
-@app.route("/rating")
+@app.route("/ratings", methods=['GET', 'POST'])
 def handle_rating():
     """Handling user ratings and save them into database."""
 
-    pass
+    if request.method == 'POST':
+        input_rest = request.form["restaurant"]
+        cleanliness = request.form["rating1"]
+        quality = request.form["rating2"]
+        atmosphere = request.form["rating3"]
+        consistency = request.form["rating4"]
+        input_rest_id = Restaurant.query.filter_by(name=input_rest).first()
+        new_ratings = Rating(user_id=session["current_user"],
+                             restaurant_id=input_rest_id.restaurant_id,
+                             cleanliness=cleanliness,
+                             quality=quality,
+                             atmosphere=atmosphere,
+                             consistency=consistency,
+                             )
+        db.session.add(new_ratings)
+        db.session.commit()
+        flash("You're ratings have been added!")
+        return redirect("/")
+    else:
+        return render_template("make_ratings.html")
 
 
-@app.route("/comments")
+@app.route("/comments", methods=['GET', 'POST'])
 def handle_comments():
     """Handling user comments and save them into database."""
 
-    pass
+    if request.method == 'POST':
+        input_rest = request.form["restaurant"]
+        text = request.form["user-comment"]
+        input_rest_id = Restaurant.query.filter_by(name=input_rest).first()
+        new_comment = Comment(user_id=session["current_user"],
+                              restaurant_id=input_rest_id.restaurant_id,
+                              comment=text,
+                              )
+        db.session.add(new_comment)
+        db.session.commit()
+        return redirect("/")
+    else:
+        return render_template("make_comments.html")
 
 
 @app.route("/restaurant_info")
 def display_restaurant():
     """Display restaurant information and show options of ratings and directions."""
 
-    pass
+    user_input = reqeust.args.get('cuisine_type')
+    results = db.session.query(Cuisine.restaurants.name).filter_by(Cuisine.name=user_input).all()
+    return results
 
 
-@app.route("/map")
+@app.route("/map.json")
 def show_map():
     """Allow users to get the directional info from Google Map."""
     pass
+    # chosen = request.args.get("order")
 
+    # return jsonify(result)
 
 # with app.test_request_context():
 #     print url_for('index')
@@ -158,9 +236,10 @@ if __name__ == "__main__":
     # that we invoke the DebugToolbarExtension
 
     # Do not debug for demo
-    app.debug = True
+    app.debug = False
 
     connect_to_db(app)
+    app.jinja_env.undefined = StrictUndefined
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)
