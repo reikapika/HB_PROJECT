@@ -86,6 +86,11 @@ class Comment(db.Model):
 
     #Defining relationship with restaurant table
     comments = db.relationship('Restaurant', backref='restaurant')
+    # likes = db.relationship('Popularity', backref='comment')
+
+    # def num_like_calculator(self):
+    #     """returns number of likes for a restaurant"""
+    #     return len(self.likes)
 
 
 class Rating(db.Model):

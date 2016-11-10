@@ -25,7 +25,6 @@ def index():
     if "current_user" in session:
         current_user_id = session["current_user"]
         user = User.query.filter_by(user_id=current_user_id).first()
-        print "#######", user.username
         return render_template("homepage.html", user=user)
     else:
         return render_template("homepage.html")
@@ -47,6 +46,8 @@ def login_user():
             return redirect("/login")
 
         session["current_user"] = user.user_id
+        user.last_login = datetime.utcnow()
+        db.session.commit()
 
         flash("You are now logged in.")
 
@@ -97,28 +98,59 @@ def logout():
     return redirect("/")
 
 
-@app.route("/favlist")
-def save_restaurants():
+@app.route("/see_favlist", methods=['GET'])
+def get_favorite_restaurants():
     """Takes in users input and save them into their account's favorite list."""
 
+    return render_template("my_favorite.html")
+
+
+@app.route("/add_to_favlist", methods=['POST'])
+def add_to_favorite():
+    """Add a restaurant to a user's favorite list."""
+
+    if "current_user" in session:
+        current_user_id = session["current_user"]
+        current_rest = request.form['restaurant']
+        print '************', current_rest
+        query = Restaurant.query.filter_by(name=current_rest).first()
+        print '*******', query
+        new_favorite = Bookmark(user_id=current_user_id,
+                                restaurant_id=query.restaurant_id)
+        print '************', new_favorite
+        db.session.add(new_favorite)
+        db.session.commit()
+        return redirect("/")
+    else:
+        return render_template("invalid_page.html")
+
+
+@app.route("/list_favlist")
+def list_favorite():
+    """Listing users' favorite restaurants that they saved before."""
     pass
+    # if "current_user" in session:
+    #     favorite = User.query(Restaurant.)
 
 
 @app.route("/profile/<username>")
 def display_profile(username):
     """Display profile page for logged in users."""
 
-    user = User.query.filter_by(username=username).first()
-    return render_template("profile.html", user=user)
+    if "current_user" in session:
+        user = User.query.filter_by(username=username).first()
+        return render_template("profile.html", user=user)
+    else:
+        return render_template("invalid_page.html")
 
 
-@app.route("/main")
-def display_main():
-    """Display main page with top restaurants."""
-    """This page will display a list of top 10 resturant names with most likes and comments,
-    and display a list of top 10 users being most activate on rating in my site."""
+# @app.route("/main")
+# def display_main():
+#     """Display main page with top restaurants."""
+#     """This page will display a list of top 10 resturant names with most likes and comments,
+#     and display a list of top 10 users being most activate on rating in my site."""
 
-    pass
+#     pass
 
 
 @app.route("/search", methods=['POST'])
@@ -126,10 +158,9 @@ def search_restaurant():
     """This allows users to search restaurant and lead them to the restaurant_info page."""
 
     user_input = request.form["search-form"]
-    exist_usernames = [t for t in (db.session.query(User.username).all())]
-    print '**************', exist_usernames
+    exist_usernames = [t for t in db.session.query(User.username).all()]
     exist_restaurants = [t for t in db.session.query(Restaurant.name).all()]
-    print '**************', exist_restaurants
+
     if (user_input,) in exist_usernames:
         # if exist_user is not None:
         #     print '**********', exist_user
@@ -147,19 +178,15 @@ def search_restaurant():
                 url = "https://api.yelp.com/v3/businesses/"
                 resp = requests.get(url=url+exist_rest.yelp_id, headers=headers)
                 rest_info = resp.json()
-                print rest_name, type(rest_info)
-                return render_template("restaurant_info.html", rest_info=rest_info)
+                num_likes = Restaurant.query.filter_by(name=rest_info['name']).first()
+                num_likes = num_likes.num_like_calculator()
+                return render_template("restaurant_info.html",
+                                       rest_info=rest_info,
+                                       num_likes=num_likes)
         else:
 
             flash("Sorry, I don't understand you. Please try again")
             return redirect("/")
-
-
-@app.route("/search-user")
-def search_user():
-    """This lets user to look up other users and their profile page (logged in users only)."""
-
-    pass
 
 
 @app.route("/ratings", methods=['GET', 'POST'])
@@ -207,22 +234,23 @@ def handle_comments():
         return render_template("make_comments.html")
 
 
-@app.route("/restaurant_info")
+@app.route("/restaurant_list", methods=['POST'])
 def display_restaurant():
-    """Display restaurant information and show options of ratings and directions."""
+    """This lists of all the restaurants of a selected cuisine type."""
 
-    user_input = reqeust.args.get('cuisine_type')
-    results = db.session.query(Cuisine.restaurants.name).filter_by(Cuisine.name=user_input).all()
-    return results
+    user_input = request.form["cuisine-type"]
+
+    selected_cuisine = Cuisine.query.filter_by(type=user_input).first()
+    results = [restaurant.name for restaurant in selected_cuisine.restaurants]
+
+    return render_template("restaurant_list.html", results=results)
 
 
-@app.route("/map.json")
-def show_map():
+@app.route("/like_rest", methods=['POST'])
+def increment_numlike():
     """Allow users to get the directional info from Google Map."""
-    pass
-    # chosen = request.args.get("order")
 
-    # return jsonify(result)
+    pass
 
 # with app.test_request_context():
 #     print url_for('index')
@@ -236,7 +264,7 @@ if __name__ == "__main__":
     # that we invoke the DebugToolbarExtension
 
     # Do not debug for demo
-    app.debug = False
+    app.debug = True
 
     connect_to_db(app)
     app.jinja_env.undefined = StrictUndefined
