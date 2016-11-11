@@ -51,7 +51,7 @@ def login_user():
 
         flash("You are now logged in.")
 
-        return redirect("/profile/%s" % user.username)
+        return redirect("/profile/%s" % user.user_id)
 
     return render_template("login.html")
 
@@ -66,8 +66,8 @@ def register_users():
         fname = request.form["fname"]
         lname = request.form["lname"]
         password = request.form["password"]
-        membership = datetime.datetime.utcnow()
-        last_login = datetime.datetime.utcnow()
+        membership = datetime.utcnow()
+        last_login = datetime.utcnow()
 
         exist_user = User.query.filter_by(username=username).first()
         if exist_user is None:
@@ -82,8 +82,12 @@ def register_users():
             db.session.add(new_user)
             db.session.commit()
 
+        else:
+            print '*******Already exists.******'
+            return render_template('/login.html')
+
         flash("Welcome, %s!" % fname)
-        return redirect("/profile/%s" % new_user.username)
+        return redirect("/profile/%s" % new_user.user_id)
 
     return render_template("register.html")
 
@@ -111,9 +115,9 @@ def add_to_favorite():
 
     if "current_user" in session:
         current_user_id = session["current_user"]
-        current_rest = request.form['restaurant']
+        current_rest = request.form.get("yelp-id")
         print '************', current_rest
-        query = Restaurant.query.filter_by(name=current_rest).first()
+        query = Restaurant.query.filter_by(yelp_id=current_rest).first()
         print '*******', query
         new_favorite = Bookmark(user_id=current_user_id,
                                 restaurant_id=query.restaurant_id)
@@ -133,105 +137,97 @@ def list_favorite():
     #     favorite = User.query(Restaurant.)
 
 
-@app.route("/profile/<username>")
-def display_profile(username):
+@app.route("/profile/<user_id>")
+def display_profile(user_id):
     """Display profile page for logged in users."""
 
     if "current_user" in session:
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(user_id=user_id).first()
         return render_template("profile.html", user=user)
     else:
-        return render_template("invalid_page.html")
-
-
-# @app.route("/main")
-# def display_main():
-#     """Display main page with top restaurants."""
-#     """This page will display a list of top 10 resturant names with most likes and comments,
-#     and display a list of top 10 users being most activate on rating in my site."""
-
-#     pass
+        return render_template("login.html")
 
 
 @app.route("/search", methods=['POST'])
-def search_restaurant():
+def do_search():
     """This allows users to search restaurant and lead them to the restaurant_info page."""
 
     user_input = request.form["search-form"]
-    exist_usernames = [t for t in db.session.query(User.username).all()]
-    exist_restaurants = [t for t in db.session.query(Restaurant.name).all()]
-
-    if (user_input,) in exist_usernames:
-        # if exist_user is not None:
-        #     print '**********', exist_user
-        exist_user = User.query.filter_by(username=user_input).first()
-        return redirect("/profile/%s" % exist_user.username)
-
-    else:
-        if (user_input,) in exist_restaurants:
-            exist_rest = Restaurant.query.filter_by(name=user_input).first()
-            if user_input == exist_rest.name:
-                rest_name = exist_rest.name
-                token = requests.post('https://api.yelp.com/oauth2/token', data=DATA)
-                access_token = token.json()['access_token']
-                headers = {'Authorization': 'bearer %s' % access_token}
-                url = "https://api.yelp.com/v3/businesses/"
-                resp = requests.get(url=url+exist_rest.yelp_id, headers=headers)
-                rest_info = resp.json()
-                num_likes = Restaurant.query.filter_by(name=rest_info['name']).first()
-                num_likes = num_likes.num_like_calculator()
-                return render_template("restaurant_info.html",
-                                       rest_info=rest_info,
-                                       num_likes=num_likes)
-        else:
-
-            flash("Sorry, I don't understand you. Please try again")
-            return redirect("/")
+    exist_usernames = User.query.filter(User.username.like('%' + user_input + '%')).all()
+    exist_restaurants = Restaurant.query.filter(Restaurant.name.like('%' + user_input + '%')).all()
+    return render_template("search_result.html",
+                           exist_usernames=exist_usernames,
+                           exist_restaurants=exist_restaurants)
 
 
-@app.route("/ratings", methods=['GET', 'POST'])
-def handle_rating():
-    """Handling user ratings and save them into database."""
+@app.route("/search_restaurant/<restaurant_id>", methods=['GET'])
+def call_yelp(restaurant_id):
+    """Make an api call for selected restaurant."""
 
-    if request.method == 'POST':
-        input_rest = request.form["restaurant"]
-        cleanliness = request.form["rating1"]
-        quality = request.form["rating2"]
-        atmosphere = request.form["rating3"]
-        consistency = request.form["rating4"]
-        input_rest_id = Restaurant.query.filter_by(name=input_rest).first()
-        new_ratings = Rating(user_id=session["current_user"],
-                             restaurant_id=input_rest_id.restaurant_id,
-                             cleanliness=cleanliness,
-                             quality=quality,
-                             atmosphere=atmosphere,
-                             consistency=consistency,
-                             )
-        db.session.add(new_ratings)
-        db.session.commit()
-        flash("You're ratings have been added!")
-        return redirect("/")
-    else:
-        return render_template("make_ratings.html")
+    exist_rest = Restaurant.query.filter_by(restaurant_id=restaurant_id).first()
+    token = requests.post('https://api.yelp.com/oauth2/token', data=DATA)
+    access_token = token.json()['access_token']
+    headers = {'Authorization': 'bearer %s' % access_token}
+    url = "https://api.yelp.com/v3/businesses/"
+    resp = requests.get(url=url+exist_rest.yelp_id, headers=headers)
+    rest_info = resp.json()
+    num_likes = exist_rest.num_like_calculator()
+
+    return render_template("restaurant_info.html",
+                           rest_info=rest_info,
+                           num_likes=num_likes,
+                           exist_rest=exist_rest)
 
 
-@app.route("/comments", methods=['GET', 'POST'])
-def handle_comments():
-    """Handling user comments and save them into database."""
+@app.route("/ratings/<restaurant_id>", methods=['GET'])
+def make_rating(restaurant_id):
+    """Take User to rating page."""
 
-    if request.method == 'POST':
-        input_rest = request.form["restaurant"]
-        text = request.form["user-comment"]
-        input_rest_id = Restaurant.query.filter_by(name=input_rest).first()
-        new_comment = Comment(user_id=session["current_user"],
-                              restaurant_id=input_rest_id.restaurant_id,
-                              comment=text,
-                              )
-        db.session.add(new_comment)
-        db.session.commit()
-        return redirect("/")
-    else:
-        return render_template("make_comments.html")
+    return render_template("make_ratings.html",
+                           restaurant_id=restaurant_id)
+
+
+@app.route("/ratings/<restaurant_id>", methods=['POST'])
+def post_rating(restaurant_id):
+    """Post user's rating by adding to the database."""
+
+    cleanliness = request.form["rating1"]
+    quality = request.form["rating2"]
+    atmosphere = request.form["rating3"]
+    consistency = request.form["rating4"]
+    new_ratings = Rating(user_id=session["current_user"],
+                         restaurant_id=restaurant_id,
+                         cleanliness=cleanliness,
+                         quality=quality,
+                         atmosphere=atmosphere,
+                         consistency=consistency,
+                         )
+    db.session.add(new_ratings)
+    db.session.commit()
+    flash("You're ratings have been added!")
+    return redirect("/")
+
+
+@app.route("/comments/<restaurant_id>", methods=['GET'])
+def make_comments(restaurant_id):
+    """Take user to comments page."""
+
+    return render_template("make_comments.html",
+                           restaurant_id=restaurant_id)
+
+
+@app.route("/comments/<restaurant_id>", methods=['POST'])
+def post_comments(restaurant_id):
+    """Add a user comment to the restaurant."""
+
+    text = request.form["user-comment"]
+    new_comment = Comment(user_id=session["current_user"],
+                          restaurant_id=restaurant_id,
+                          comment=text,
+                          )
+    db.session.add(new_comment)
+    db.session.commit()
+    return redirect("/")
 
 
 @app.route("/restaurant_list", methods=['POST'])
@@ -241,7 +237,7 @@ def display_restaurant():
     user_input = request.form["cuisine-type"]
 
     selected_cuisine = Cuisine.query.filter_by(type=user_input).first()
-    results = [restaurant.name for restaurant in selected_cuisine.restaurants]
+    results = selected_cuisine.restaurants
 
     return render_template("restaurant_list.html", results=results)
 

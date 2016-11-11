@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class=col-xs-10>
+<h2>---Below is the list of possible users to match your search---</h2>
+{% if exist_restaurants %}
+<h2>Restaurants Which Match Your Search:</h2>
+    {% for restaurant in exist_restaurants %}
+        <li><a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a></li>
+    {% endfor %}
+{% endif %}
+{% if exist_usernames %}
+<h2>Users Who Match Your Search:</h2>
+    {% for username in exist_usernames %}
+        <li><a href="/profile/{{ username.user_id }}">{{ username.username }}</a></li>
+    {% endfor %}
+{% endif %}
+{% if not exist_restaurants and not exist_usernames %}
+    <h3>Sorry, we don't have this in record. Please try again.</h3>
+{% endif %}
+
+</div>
+{% endblock %}

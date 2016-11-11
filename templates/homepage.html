@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet">
+{% endblock %}
+{% block content %}
+{% if "current_user" in session %}
+  <a href="/profile/{{ user.user_id }}"><b>My Account</b></a>
+  <form action="/logout" method="POST">
+    <input type="submit" value="Sign out">
+  </form>
+{% else %}
+  <form action="/login" method="GET">
+    <input type="submit" value="Sign in">
+  </form>
+{% endif %}
+
+  <form action="/search" method="POST">
+    <input type="text" name="search-form">
+    <input type="submit" value="Search">
+  </form>    
+  <h1>Mingle with Asian Food Lovers in the Bay.</h1>
+
+  <form action="/restaurant_list" method="POST">
+    Choose Your Cuisine of the Day!
+    <select name="cuisine-type">
+      <option value="Japanese">Japanese</option>
+      <option value="Chinese">Chinese</option>
+      <option value="Korean">Korean</option>
+      <option value="Indian">Indian</option>
+      <option value="Vietnamese">Vietnames</option>
+      <option value="Thai">Thai</option>
+      <option value="Middle Eastern">Middle Eastern</option>
+    </select>
+    <input id="cuisine-btn" type="submit" value="Check it out!">
+  </form>
+
+{% endblock %}

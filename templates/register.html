@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Register Form</title>
+{% endblock %}
+
+{% block content %}
+<h2>Please fill out the following for registration.</h2>
+<form action="/register" method="POST">
+  <p><label>Enter your first name: <input type="text" name="fname"></label></p>
+  <p><label>Enter your last name: <input type="text" name="lname"></label></p>
+  <p><label>Enter your username: <input type="text" name="username"></label></p>
+  <p><label> Enter your password: <input type="password" name="password"></label></p>
+  <!-- Confirm your password: <input type="password" name="password"> -->
+  <select name="fav-cuisine">
+  What's your favorite cuisine type?
+    <option value="Japanese">Japanese</option>
+    <option value="Chinese">Chinese</option>
+    <option value="Korean">Korean</option>
+    <option value="Vietnamese">Vietnamese</option>
+    <option value="Thai">Thai</option>
+    <option value="Middle Eastern">Middle Eastern</option>
+    <option value="Indian">Indian</option>
+  </select>
+  <input type="submit">
+</form>
+{% endblock %}
+
+

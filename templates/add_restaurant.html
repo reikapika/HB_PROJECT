@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Sorry we don't have record for the restuarant you are looking for.</h2>
+<form action="/add_restaurant" method="POST">
+    Please add your restaurant and let others see your rates!
+    New Restaurant Name: <input type="text" name="restaurant-name">
+    

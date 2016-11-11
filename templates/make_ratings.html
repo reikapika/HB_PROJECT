@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="static/base.css">
+<link rel="stylesheet" href="static/make_comment.css">
+{% endblock %}
+{% block content %}
+<div>
+  <div class="rating-box">
+    <h2>How do you think about this restaurant?</h2>
+    <form action="/ratings/{{ restaurant_id }}" method="POST">
+      <label>Cleanliness<input name="rating1" type="number" class="rating" min=1 max=5 data-size="md"></label>
+      <label>Quality<input name="rating2" type="number" class="rating" min=1 max=5 data-size="md"></label>
+      <label>Atmosphere<input name="rating3" type="number" class="rating" min=1 max=5 data-size="md"></label>
+      <label>Consistency<input name="rating4" type="number" class="rating" min=1 max=5 data-size="md"></label>
+      <input type="submit" value="Rate!">
+    </form>
+  </div>
+</div>
+    
+{% endblock %}

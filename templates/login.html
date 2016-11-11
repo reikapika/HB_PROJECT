@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="home-log-in"><h1>Please log in.</h1></div>
+<div class="col-md-8 offset 2">
+  <form action="/login" method="POST">
+    <label>Username:
+      <input type="username" name="username" required>
+    </label>
+    <label>Password:
+      <input type="password" name="password" required>
+    </label>
+    <input type="submit" value="Log in">
+  </form>
+  <form action="/register" method="GET">
+    Not a user yet? <a href="/register"><b>Register Now!</b></a>
+  </form>
+  </div>
+</div>
+
+
+{% if "current_user" in session %}
+  <form action="/profile/<username>" method="GET">
+    <div class="form-group">
+      <a href="/profile/<username>"><b>My Account</b></a>
+    </div>
+  </form>
+  <br>
+  <form action="/logout" method="POST">
+    <input type="submit" value="Sign out">
+  </form>
+{% endif %}
+
+{% endblock %}
