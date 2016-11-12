@@ -9,6 +9,7 @@ import os
 #Settting up the back end routes.
 app = Flask(__name__)
 app.secret_key = "ABC"
+app.jinja_env.undefined = StrictUndefined
 
 
 APP_ID = os.environ['YELP_CONSUMER_KEY']
@@ -102,39 +103,43 @@ def logout():
     return redirect("/")
 
 
-@app.route("/see_favlist", methods=['GET'])
-def get_favorite_restaurants():
-    """Takes in users input and save them into their account's favorite list."""
-
-    return render_template("my_favorite.html")
-
-
 @app.route("/add_to_favlist", methods=['POST'])
 def add_to_favorite():
     """Add a restaurant to a user's favorite list."""
 
-    if "current_user" in session:
-        current_user_id = session["current_user"]
-        current_rest = request.form.get("yelp-id")
-        print '************', current_rest
-        query = Restaurant.query.filter_by(yelp_id=current_rest).first()
-        print '*******', query
+    current_user_id = session["current_user"]
+    current_rest = request.form.get("restaurant_id")
+
+    if Bookmark.query.filter_by(restaurant_id=current_rest).first():
+        return jsonify(status="added", restaurant_id=current_rest)
+    else:
         new_favorite = Bookmark(user_id=current_user_id,
-                                restaurant_id=query.restaurant_id)
-        print '************', new_favorite
+                                restaurant_id=current_rest)
+
         db.session.add(new_favorite)
         db.session.commit()
-        return redirect("/")
-    else:
-        return render_template("invalid_page.html")
+
+        return jsonify(status="success", restaurant_id=current_rest)
 
 
-@app.route("/list_favlist")
-def list_favorite():
+@app.route("/list_favlist/<user_id>")
+def list_favorite(user_id):
     """Listing users' favorite restaurants that they saved before."""
-    pass
-    # if "current_user" in session:
-    #     favorite = User.query(Restaurant.)
+
+    if "current_user" in session:
+
+        bookmarks = Bookmark.query.filter_by(user_id=user_id).all()
+        restaurants = []
+        for bookmark in bookmarks:
+            restaurant_id = bookmark.restaurant_id
+            rest_obj = Restaurant.query.filter_by(restaurant_id=restaurant_id).first()
+            restaurants.append(rest_obj)
+
+        return render_template("my_favorite.html", restaurants=restaurants)
+
+    else:
+
+        return redirect("/")
 
 
 @app.route("/profile/<user_id>")
@@ -143,7 +148,12 @@ def display_profile(user_id):
 
     if "current_user" in session:
         user = User.query.filter_by(user_id=user_id).first()
-        return render_template("profile.html", user=user)
+        last_login = user.last_login.strftime("%B %d, %Y %M:%S %P")
+        membership = user.membership.strftime("%B %d, %Y")
+        return render_template("profile.html",
+                               user=user,
+                               last_login=last_login,
+                               membership=membership)
     else:
         return render_template("login.html")
 
@@ -263,7 +273,6 @@ if __name__ == "__main__":
     app.debug = True
 
     connect_to_db(app)
-    app.jinja_env.undefined = StrictUndefined
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)

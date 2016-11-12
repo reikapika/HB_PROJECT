@@ -2,6 +2,7 @@
 
 {% block content %}
 <h2>Restaurants Marked as Favorites</h2>
-
-
+{% for restaurant in restaurants %}
+<b><li><a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a></li></li></b>
+{% endfor %}
 {% endblock %}
