@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class=col-xs-10>
-<h2>---Below is the list of possible users to match your search---</h2>
+<div class="col-xs-10">
+<h2>Below is the list of possible users to match your search</h2>
+<a href="/add_restaurant">Can't find you restaurant?</a>
 {% if exist_restaurants %}
 <h2>Restaurants Which Match Your Search:</h2>
     {% for restaurant in exist_restaurants %}

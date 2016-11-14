@@ -1,33 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="static/base.css">
 {% block head %}
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet">
-  <link rel="stylesheet" href="static/base.css">
-  {% block title %}<title>Pocket Asia</title>{% endblock %}
+<title>Pocket Asia</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 {% endblock %}
 </head>
 
 <body>
-  <form action="/" method="GET">
-    <input type="submit" value="Home">
-  </form>
- 
+<!-- header -->
+<div id="header" class="clearfix">
+<header>
+    <a href="/"><img src="/static/img/headerLogo.png" alt="PocketAsia" width="200" height="65" class="btn" /></a>
+</header>
+</div>
+<!-- header -->
+
+<!-- main -->
+<div class="container">
+<div class="col-xs-10-offset-2">
 {% block content %}
-      <div class=flashes>
-        {% for message in get_flashed_messages() %}
-         {{ message }}
-        {% endfor %}
-      </div>
+<div class="row">
+  <ul class="nav nav-pills">
+    <li>
+    <form action="/search" method="POST">
+      <input type="text" name="search-form">
+    <input type="submit" value="Search">
+    </form>
+    </li>  
+    {% if "current_user" in session %}
+    <li><a href="/profile/{{ user.user_id }}">My Account</a></li>
+    <li>
+    <form action="/logout" method="POST">
+      <input type="submit" value="Log out">
+    </form>
+    </li>
+    {% else %}
+    <li><a href="/login">Log In</a></li>
+    {% endif %}
+  </ul>
+  <form action="/restaurant_list" method="POST">
+  Choose Your Cuisine of the Day!
+  <select name="cuisine-type">
+    <option value="Japanese">Japanese</option>
+    <option value="Chinese">Chinese</option>
+    <option value="Korean">Korean</option>
+    <option value="Indian">Indian</option>
+    <option value="Vietnamese">Vietnames</option>
+    <option value="Thai">Thai</option>
+    <option value="Middle Eastern">Middle Eastern</option>
+  </select>
+  <input id="cuisine-btn" type="submit" value="Check it out!">
+  </form>
+</div>
+
+<!--flash message-->
+<div class=flashes>
+<!-- {% for message in get_flashed_messages() %}
+     {{ message }}
+    {% endfor %} -->
+</div>
+<!--flash message-->
 {% endblock %}
-<script src="https://code.jquery.com/jquery.js"></script>
-<script src="/static/favorite.js"></script>
-<script src="/static/numLike.js"></script>
+</div>
+<script type="text/javascript" src="https://code.jquery.com/jquery.js"></script>
+<script type="text/javascript" src="/static/js/favorite.js"></script>
+<script type="text/javascript" src="/static/js/numLike.js"></script>
 </body>
 </html>

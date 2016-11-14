@@ -1,8 +1,5 @@
 {% extends "base.html" %}
 
-{% block head %}
-  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet">
-{% endblock %}
 {% block content %}
 {% if "current_user" in session %}
   <a href="/profile/{{ user.user_id }}"><b>My Account</b></a>

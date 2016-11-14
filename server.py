@@ -2,7 +2,7 @@ from jinja2 import StrictUndefined
 import requests
 from flask import Flask, render_template, request, jsonify, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
-from model import connect_to_db, db, User, Cuisine, Rating, Restaurant, Comment, Bookmark
+from model import connect_to_db, db, User, Cuisine, Rating, Restaurant, Comment, Bookmark, Popularity
 from datetime import datetime
 import os
 
@@ -26,9 +26,9 @@ def index():
     if "current_user" in session:
         current_user_id = session["current_user"]
         user = User.query.filter_by(user_id=current_user_id).first()
-        return render_template("homepage.html", user=user)
+        return render_template("base.html", user=user)
     else:
-        return render_template("homepage.html")
+        return render_template("base.html")
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -103,7 +103,7 @@ def logout():
     return redirect("/")
 
 
-@app.route("/add_to_favlist", methods=['POST'])
+@app.route("/add_to_favlist.json", methods=['POST'])
 def add_to_favorite():
     """Add a restaurant to a user's favorite list."""
 
@@ -181,12 +181,14 @@ def call_yelp(restaurant_id):
     url = "https://api.yelp.com/v3/businesses/"
     resp = requests.get(url=url+exist_rest.yelp_id, headers=headers)
     rest_info = resp.json()
+    comments = Comment.query.filter_by(restaurant_id=restaurant_id).all()
     num_likes = exist_rest.num_like_calculator()
 
     return render_template("restaurant_info.html",
                            rest_info=rest_info,
                            num_likes=num_likes,
-                           exist_rest=exist_rest)
+                           exist_rest=exist_rest,
+                           comments=comments)
 
 
 @app.route("/ratings/<restaurant_id>", methods=['GET'])
@@ -252,11 +254,38 @@ def display_restaurant():
     return render_template("restaurant_list.html", results=results)
 
 
-@app.route("/like_rest", methods=['POST'])
-def increment_numlike():
-    """Allow users to get the directional info from Google Map."""
+@app.route("/add_restaurant", methods=['POST'])
+def add_restaurant():
+    """User can add a new restaurant to database."""
 
     pass
+
+
+@app.route("/like_rest.json", methods=['POST'])
+def increment_numlike():
+    """User can like the restaurant and be recorded to our database."""
+
+    if request.method == 'POST':
+        restaurant_id = request.form['restaurant_id']
+        current_user = session['current_user']
+        query = Popularity.query.filter_by(user_id=current_user, restaurant_id=restaurant_id).first()
+        restaurant = Restaurant.query.filter_by(restaurant_id=restaurant_id).first()
+        num_likes = restaurant.num_like_calculator()
+        if query is None:
+            new_like = Popularity(user_id=current_user, restaurant_id=restaurant_id)
+            db.session.add(new_like)
+            db.session.commit()
+
+            return jsonify(status="success", num_likes=num_likes)
+    else:
+        current_user = session['current_user']
+        restaurant_id = request.form['restaurant_id']
+        query = Popularity.query.filter_by(user_id=current_user, restaurant_id=restaurant_id).first()
+        db.sessinon.delete(query)
+        db.session.commit()
+        print '******', num_likes
+
+        return jsonify(status="added", num_likes=num_likes)
 
 # with app.test_request_context():
 #     print url_for('index')
