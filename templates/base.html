@@ -1,71 +1,44 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 <head>
-{% block head %}
-<title>Pocket Asia</title>
-<link rel="stylesheet" href="/static/css/base.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-{% endblock %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pocket Asia</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="static/css/base.css">
 </head>
+
 
 <body>
 <!-- header -->
-<div id="header" class="clearfix">
-<header>
-    <a href="/"><img src="/static/img/headerLogo.png" alt="PocketAsia" width="200" height="65" class="btn" /></a>
-</header>
-</div>
-<!-- header -->
+  <header>
+    <a href="/"><img src="/static/img/headerLogo.png" alt="PocketAsia" position="center" width="300px" height="100px" class="btn" /></a>
+    <br>
+  </header>
 
-<!-- main -->
-<div class="container">
-<div class="col-xs-10-offset-2">
-{% block content %}
-<div class="row">
-  <ul class="nav nav-pills">
-    <li>
-    <form action="/search" method="POST">
-      <input type="text" name="search-form">
-    <input type="submit" value="Search">
-    </form>
-    </li>  
-    {% if "current_user" in session %}
-    <li><a href="/profile/{{ user.user_id }}">My Account</a></li>
-    <li>
-    <form action="/logout" method="POST">
-      <input type="submit" value="Log out">
-    </form>
-    </li>
-    {% else %}
-    <li><a href="/login">Log In</a></li>
+
+  <!--flash message-->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+        {% for message in messages %}
+        <div class="alert alert-info">{{ message }}</div>
+        {% endfor %}
+      </ul>
     {% endif %}
-  </ul>
-  <form action="/restaurant_list" method="POST">
-  Choose Your Cuisine of the Day!
-  <select name="cuisine-type">
-    <option value="Japanese">Japanese</option>
-    <option value="Chinese">Chinese</option>
-    <option value="Korean">Korean</option>
-    <option value="Indian">Indian</option>
-    <option value="Vietnamese">Vietnames</option>
-    <option value="Thai">Thai</option>
-    <option value="Middle Eastern">Middle Eastern</option>
-  </select>
-  <input id="cuisine-btn" type="submit" value="Check it out!">
-  </form>
-</div>
+  {% endwith %}
 
-<!--flash message-->
-<div class=flashes>
-<!-- {% for message in get_flashed_messages() %}
-     {{ message }}
-    {% endfor %} -->
-</div>
-<!--flash message-->
-{% endblock %}
-</div>
-<script type="text/javascript" src="https://code.jquery.com/jquery.js"></script>
-<script type="text/javascript" src="/static/js/favorite.js"></script>
-<script type="text/javascript" src="/static/js/numLike.js"></script>
+
+  <!--body-->
+  <div class="col-md-10 col-md-offset-1" id="content">
+  {% block content %}
+  {% endblock %}
+  <div>
+
+  <!--Javascript-->
+  <script type="text/javascript" src="https://code.jquery.com/jquery.js"></script>
+  <script type="text/javascript" src="/static/js/favorite.js"></script>
+  <script type="text/javascript" src="/static/js/numLike.js"></script>
 </body>
 </html>

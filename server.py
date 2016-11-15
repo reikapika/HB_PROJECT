@@ -26,9 +26,9 @@ def index():
     if "current_user" in session:
         current_user_id = session["current_user"]
         user = User.query.filter_by(user_id=current_user_id).first()
-        return render_template("base.html", user=user)
+        return render_template("homepage.html", user=user)
     else:
-        return render_template("base.html")
+        return render_template("homepage.html")
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -140,6 +140,25 @@ def list_favorite(user_id):
     else:
 
         return redirect("/")
+
+
+@app.route("/remove_favor/<restaurant_id>", methods=['POST'])
+def remove_from_favlist(restaurant_id):
+    """Removing the restaurant from user's favorite list."""
+
+    if "current_user" in session:
+
+        bookmark = Bookmark.query.filter_by(restaurant_id=restaurant_id).first()
+        print '************', bookmark
+        db.session.delete(bookmark)
+        db.session.commit()
+        return redirect("/list_favlist/%s" % session['current_user'])
+
+    else:
+
+        return render_template("login.html")
+
+
 
 
 @app.route("/profile/<user_id>")
@@ -254,11 +273,26 @@ def display_restaurant():
     return render_template("restaurant_list.html", results=results)
 
 
-@app.route("/add_restaurant", methods=['POST'])
-def add_restaurant():
+@app.route("/show_addform", methods=['GET'])
+def display_form():
     """User can add a new restaurant to database."""
 
-    pass
+    return render_template("add_restaurant.html")
+
+
+@app.route("/add_restaurant", methods=['POST'])
+def add_restaurant():
+    """User can add a restaurant to the database."""
+
+    if "current_user" in session:
+        new_rest = request.form["new-rest"]
+        token = requests.post('https://api.yelp.com/oauth2/token', data=DATA)
+        access_token = token.json()['access_token']
+        headers = {'Authorization': 'bearer %s' % access_token}
+        url = "https://api.yelp.com/v3/businesses/"
+        resp = requests.get(url=url+exist_rest.yelp_id, headers=headers)
+        rest_info = resp.json()
+
 
 
 @app.route("/like_rest.json", methods=['POST'])

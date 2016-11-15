@@ -8,22 +8,23 @@
     height: 100%; margin: 30px; padding: 10px;
   }
   #restaurant-pic{
-    width:300px;
-    height:300px;
+    width:200px;
+    height:200px;
   }
 </style>
   <div class="row">
-    <div class="col-xs-4">
+    <div class="col-md-4">
       {% if "current_user" in session %}
       <button id="fav-restaurant" class="favorite-btn" value="{{ exist_rest.restaurant_id}}">&hearts; Add to Favorite</button><br>
       <a href="/comments/{{ exist_rest.restaurant_id }}">New Comment</a>
       <br>
       <a href="/ratings/{{ exist_rest.restaurant_id }}">New Rating</a>
       {% endif %}
-      <img id="restaurant-pic" src={{ rest_info['image_url'] }}>
+      <br>
+      <img id="restaurant-pic" src={{ rest_info['image_url'] }} width="70px" height="70px">
     </div>
   
-    <div class="col-xs-3">
+    <div class="col-md-3">
       <b>Restaurant Information</b><br>
       <h2>{{ rest_info['name'] }}</h2>
       Likes: <span id="num_likes"></span><br>
@@ -44,7 +45,7 @@
       </button>
       {% endif %}
     </div>
-    <div id="map" class="col-xs-5"></div>
+    <div id="map" class="col-md-5"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATx-dTNuzvPtdyA7R0YmOYH5gD498D4Vs&callback=initMap"
     async defer></script>
 
@@ -83,7 +84,7 @@
     }
     </script>
   <div class="row">
-    <div class="col-xs-4">
+    <div class="col-md-4">
        <b>Comments from Users:</b>
     {% for comment in comments %}
         <br><b>{{ comment.user.username }}</b> - "{{ comment.comment }}"

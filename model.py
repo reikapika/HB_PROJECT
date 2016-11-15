@@ -31,6 +31,7 @@ class Restaurant(db.Model):
     name = db.Column(db.String(50), nullable=False)
     yelp_id = db.Column(db.String(100), nullable=True)
     yelp_rating = db.Column(db.Integer, nullable=True)
+    # image = db.Column(db.String(200), nullable=True)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     cuisine_id = db.Column(db.Integer, db.ForeignKey('cuisine.cuisine_id'))
@@ -89,7 +90,7 @@ class Comment(db.Model):
     # likes = db.relationship('Popularity', backref='comment')
 
     # def num_like_calculator(self):
-    #     """returns number of likes for a restaurant"""
+    #     """returns number of likes for a comment"""
     #     return len(self.likes)
 
 

@@ -1,24 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="col-xs-10">
-<h2>Below is the list of possible users to match your search</h2>
-<a href="/add_restaurant">Can't find you restaurant?</a>
+<!--Add button for creating new restaurants.-->
+<div class="row">
+  <div class="col-md-6">
+    <h2>Below is the list of possible users to match your search</h2>
+    <button class="btn btn-default" data-toggle="collapse">Can't find you restaurant?</button>
+    <form action="/add_restaurant" class="form collapse" id="add-restaurant" method="POST">
+      <br>
+      <div class="form-group">
+        <input type="text" name="address" class="form-control" placeholder="Address">
+      </div>
+      <div class="form-group">
+        <input type="text" name="city" class="form-control" placeholder="City">
+      </div>
+      <div class="form-group">
+        <input type="text" name="state" class="form-control" placeholder="State">
+      </div>
+      <div class="form-group">
+        <input type="text" name="country" class="form-control" placeholder="Country">
+      </div>
+      <div class="form-group">
+          <input type="submit" class="btn btn-default btn-block" value="Add">
+      </div>
+    </form>
+  </div>
+</div>
 {% if exist_restaurants %}
-<h2>Restaurants Which Match Your Search:</h2>
+<div class="row">
+  <div class="col-md-10">
+    <h2>Restaurants Which Match Your Search:</h2>
     {% for restaurant in exist_restaurants %}
-        <li><a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a></li>
+    <div class="col-md-3">
+      <a href="/search_restaurant/{{ restaurant.restaurant_id }}">
+        <img src="/static/img/randomtaichi.jpeg" height="70px" width="70px">
+        <br>{{ restaurant.name }}
+      </a>
+      </div>
     {% endfor %}
-{% endif %}
-{% if exist_usernames %}
-<h2>Users Who Match Your Search:</h2>
+    {% endif %}
+    <div class="col-md-3">
+    {% if exist_usernames %}
+    <h2>Users Who Match Your Search:</h2>
     {% for username in exist_usernames %}
-        <li><a href="/profile/{{ username.user_id }}">{{ username.username }}</a></li>
+      <li>
+        <a href="/profile/{{ username.user_id }}">{{ username.username }}</a>
+      </li>
     {% endfor %}
-{% endif %}
-{% if not exist_restaurants and not exist_usernames %}
-    <h3>Sorry, we don't have this in record. Please try again.</h3>
-{% endif %}
-
+    {% endif %}
+    </div>
+  </div>
+    {% if not exist_restaurants and not exist_usernames %}
+      <h3>Sorry, we don't have this in record. Please try again.</h3>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

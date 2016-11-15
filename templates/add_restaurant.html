@@ -1,8 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Sorry we don't have record for the restuarant you are looking for.</h2>
-<form action="/add_restaurant" method="POST">
-    Please add your restaurant and let others see your rates!
-    New Restaurant Name: <input type="text" name="restaurant-name">
+<h2>Let others get to explore more delicious!</h2>
+<hr>
+<form id="new-rest" action="/add_restaurant" method="POST">
+  <p>New Restaurant Name: <input type="text" name="restaurant-name"></p>
+  Restaurant Location:<br>
+  <br>Address: <input type="text" name="address">
+  <br>City: <input type="text" name="city">
+  <br>State: <input type="text" name="state">
+  <br>Zipcode: <input type="integer" name="zipcode">
+  <br>
+  <select name="cuisine-type">
+    <option value="Japanese">Japanese</option>
+    <option value="Chinese">Chinese</option>
+    <option value="Korean">Korean</option>
+    <option value="Indian">Indian</option>
+    <option value="Vietnamese">Vietnames</option>
+    <option value="Thai">Thai</option>
+    <option value="Middle Eastern">Middle Eastern</option>
+  </select>
+  <input type="submit" value="Add">
+</form>
+
+<script>
+function CallGoogle(evt){
+  var FormValues = $("#new-rest").serialize();
+  console.log(FormValues);
+  $.ajax({
+    url: "https://maps.googleapis.com/maps/api/directions/",
+    dataType: "json",
+    data: data,
+    success: success
+  });
+
+}
+
+function AddRestaurant(){
+  $.post("/add_restaurant", {data: json from Google}, CallGoogle);
+}
+
+$('#new-rest').on('submit', AddRestaurant);
+
+</script>
+{% endblock %}
+
+
+
     

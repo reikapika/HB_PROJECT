@@ -1,5 +1,10 @@
 body {
-    background-color: lightblue;
+    background-color: #e60012;
+    overflow: auto;
+}
+
+#content {
+    background-color: beige;
 }
 
 h1 {
@@ -23,8 +28,8 @@ ul#Navi {
     min-width: 696px;
     list-style: none;
     padding-top: 20px;
-    }
+}
 
 ul#Navi li {
         display: inline;
-    }
+}
