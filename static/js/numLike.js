@@ -4,6 +4,7 @@ $(function () {
   function addLike(evt) {
 
     var formValue = $('#like-it').val();
+    console.log(formValue);
     $.post("/like_rest.json", {'restaurant_id': formValue }, addLikeSuccess);
   }
 

@@ -6,6 +6,8 @@ from model import connect_to_db, db, User, Cuisine, Rating, Restaurant, Comment,
 from datetime import datetime
 import os
 from pprint import pprint
+import json
+
 
 #Settting up the back end routes.
 app = Flask(__name__)
@@ -279,22 +281,20 @@ def lookup_restaurant():
     """User can add a restaurant to the database."""
 
     if "current_user" in session:
-        name = request.form['name']
-        address = request.form['address']
-        city = request.form['city']
-        state = request.form['state']
-        params = {'location': address+city+state,
-                  'sort_by': 'rating',
-                  'term': name,
-                  'limit': 10,
-                  }
-        token = requests.post('https://api.yelp.com/oauth2/token', data=DATA)
-        access_token = token.json()['access_token']
-        headers = {'Authorization': 'bearer %s' % access_token}
-        url = 'https://api.yelp.com/v3/businesses/search'
-        resp = requests.get(url=url, params=params, headers=headers)
-        rest_info = resp.json()
-        return jsonify(status='True', rest_info=rest_info)
+        text = request.form['name']
+        print '*********', text
+        coords = request.form.get('pos')
+        # coords = json.loads(coords)
+        print '************', text, coords
+        # params = {'text': text, 'latitude': lat, 'longitude': lng}
+        # token = requests.post('https://api.yelp.com/oauth2/token', data=DATA)
+        # access_token = token.json()['access_token']
+        # headers = {'Authorization': 'bearer %s' % access_token}
+        # url = 'https://api.yelp.com/v3/autocomplete'
+        # resp = requests.get(url=url, params=params, headers=headers)
+        # rest_info = resp.json()
+        # pprint(rest_info)
+        return jsonify(status='True')
 
     else:
         return jsonify(status='False')
@@ -306,24 +306,28 @@ def increment_numlike():
 
     if "current_user" in session:
         restaurant_id = request.form['restaurant_id']
+        print '********', restaurant_id
         current_user = session['current_user']
-        query = Popularity.query.filter_by(restaurant_id=restaurant_id).first()
-        print '********', query
+        print '********', current_user
+        target = db.session.query(Popularity).filter_by(user_id=current_user, restaurant_id=restaurant_id).first()
+        print '********', type(target)
 
-        if query is None:
+        #check if the user has already liked this restaurant
+        if target is not None:
+            db.session.delete(target)
+            db.session.commit()
+            num_likes = Popularity.query.filter_by(restaurant_id=restaurant_id).count()
+            print '******', num_likes
+            return jsonify(status="unliked", num_likes=num_likes)
+        else:
             new_like = Popularity(user_id=current_user, restaurant_id=restaurant_id)
             db.session.add(new_like)
             db.session.commit()
             num_likes = new_like.restaurants.num_like_calculator()
             print'*******', num_likes
             return jsonify(status="ok", num_likes=num_likes)
-        else:
-            db.session.delete(query)
-            db.session.commit()
-            num_likes = Popularity.query.filter_by(restaurant_id=restaurant_id).count()
-            print '******', num_likes
-            return jsonify(status="unliked", num_likes=num_likes)
     else:
+        flash("Please log in and try again.")
         return redirect("/homepage")
 
 

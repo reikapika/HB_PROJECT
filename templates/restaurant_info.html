@@ -13,21 +13,10 @@
   }
 </style>
   <div class="row">
-    <div class="col-md-4">
-      {% if "current_user" in session %}
-      <button id="fav-restaurant" class="favorite-btn" value="{{ exist_rest.restaurant_id}}">&hearts; Add to Favorite</button><br>
-      <a href="/comments/{{ exist_rest.restaurant_id }}">New Comment</a>
-      <br>
-      <a href="/ratings/{{ exist_rest.restaurant_id }}">New Rating</a>
-      {% endif %}
-      <br>
-      <img id="restaurant-pic" src={{ rest_info['image_url'] }} width="70px" height="70px">
-    </div>
-  
-    <div class="col-md-4">
+    <div class="col-md-6">
       <b>Restaurant Information</b><br>
       <h2>{{ rest_info['name'] }}</h2>
-      Likes: <span id="num_likes">{{ exist_rest.num_like_calculator() }}</span><br>
+      Likes: <span id="num_likes">{{ num_likes }}</span><br>
       Category: {{ rest_info['categories'][0]['title'] }}<br>
       Phone: {{ rest_info['phone'] }}<br>
       Price Level: {{ rest_info['price'] }}<br>
@@ -45,51 +34,72 @@
         <span id="like">Like</span>
       </button>
       <div class="alert alert-info" id="fake-flash" data-toggle="collapse"></div>
+       {% endif %}
+      </div>
+    <div class="col-md-6">
+      <br>
+      {% if "current_user" in session %}
+      <button id="fav-restaurant" class="favorite-btn" value="{{ exist_rest.restaurant_id}}">&hearts; Add to Favorite</button><br>
+      <a href="/comments/{{ exist_rest.restaurant_id }}">New Comment</a>
+      <br>
+      <a href="/ratings/{{ exist_rest.restaurant_id }}">New Rating</a>
       {% endif %}
+      <br>
+      <br>
+      <img id="restaurant-pic" src={{ rest_info['image_url'] }} width="70px" height="70px">
     </div>
-    <div id="map" class="col-md-4"></div>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATx-dTNuzvPtdyA7R0YmOYH5gD498D4Vs&callback=initMap"
-    async defer></script>
+  </div>
+<hr>
+  <div class="row">
+    <div id="map" class="col-md-6"></div>
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATx-dTNuzvPtdyA7R0YmOYH5gD498D4Vs&callback=initMap"
+      async defer></script>
 
-    <script>
-      var userLatlng = {
-        lat: {{ rest_info['coordinates']['latitude'] }},
-        lng: {{ rest_info['coordinates']['longitude'] }}
-      };
+      <script>
 
-      var map;
+        var userLatlng = {
+          lat: {{ rest_info['coordinates']['latitude'] }},
+          lng: {{ rest_info['coordinates']['longitude'] }}
+        };
 
-      function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: userLatlng.lat, lng: userLatlng.lng},
-          zoom: 12
-      });
-        var marker = new google.maps.Marker({
-          position: userLatlng,
-          icon: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_local_restaurant_48px-32.png',
-          map: map
+        var map;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+              center: {lat: userLatlng.lat, lng: userLatlng.lng},
+              zoom: 12
+          });
+            var marker = new google.maps.Marker({
+              position: userLatlng,
+              icon: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_local_restaurant_48px-32.png',
+              map: map
+            });
+
+            var contentString = 
+              '<div><h2>{{ rest_info['name'] }}</h2></div>' + 
+              '<p>{{ rest_info['location']['address1'] }}</p>' +
+              '<p>{{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }}</p>'
+            ;
+
+            var infowindow = new google.maps.InfoWindow({
+            content: contentString
         });
 
-        var contentString = 
-          '<div><h2>{{ rest_info['name'] }}</h2></div>' + 
-          '<p>{{ rest_info['location']['address1'] }}</p>' +
-          '<p>{{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }}</p>'
-        ;
+          marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+      }
 
-        var infowindow = new google.maps.InfoWindow({
-        content: contentString
-      });
-
-        marker.addListener('click', function() {
-        infowindow.open(map, marker);
-      });
-    }
-    </script>
-  <div class="row">
-    <div class="col-md-4">
+      </script>
+  <br>
+  <br>
+    <div class="col-md-6">
        <b>Comments from Users:</b>
-    {% for comment in comments %}
+        {% for comment in comments %}
         <br><b>{{ comment.user.username }}</b> - "{{ comment.comment }}"
+        {% if comment.num_like_calculator() %}
+          <span>{{ comment.num_like_calculator() }}</span>
+        {% endif %}
         {% endfor %}
     </div>
   </div>

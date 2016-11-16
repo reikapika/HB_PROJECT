@@ -2,18 +2,26 @@
 
 {% block content %}
 <h2>Restaurants Marked as Favorites</h2>
-{% for restaurant in restaurants %}
-<div class="col-md-8">
-  <div class="col-md-4">
-    <li>
-      <img src={{ restaurant.image }} width="200px" height="200px">
-      <a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a>
-      <form action="/remove_favor/{{ restaurant.restaurant_id }}" method="POST">
-        <span class="glyphicon glyphicon-trash"><input type="submit" value="Remove"></span>
-      </form>
-    </li>
+{% if restaurants %}
+  {% for restaurant in restaurants %}
+  <div class="col-md-8">
+    <div class="col-md-4">
+      <li>
+        <img src={{ restaurant.image }} width="200px" height="200px">
+        <a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a>
+        <form action="/remove_favor/{{ restaurant.restaurant_id }}" method="POST">
+          <span class="glyphicon glyphicon-trash"><input type="submit" value="Remove"></span>
+        </form>
+      </li>
+    </div>
   </div>
-</div>
-{% endfor %}
-
+  {% endfor %}
+{% else %}
+  <div class="row">
+    <div class="col-md-10">
+      <h2>Your favorite list is empty.</h2>
+      <img src="/static/img/randomtaichi.jpeg" height="300px" width="400px">
+    </div>
+  </div>
+{% endif %}
 {% endblock %}

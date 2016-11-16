@@ -8,20 +8,14 @@
       <button class="btn btn-default" data-toggle="collapse" data-target="#new-rest">Can't find you restaurant?</button>
       <form class="form-collapse" id="new-rest" action="/add_restaurant.json" method="POST">
         <div class="form-group">
-          <input type="text" name="name" class="form-control input-sm" placeholder="Restaurant Name">
-        <!-- </div>
-        <div class="form-group">
-          <input type="text" name="address" class="form-control input-sm" placeholder="Address">
+          <input type="text" id="name" class="form-control input-sm" placeholder="Restaurant Name">
         </div>
-        <div class="form-group">
-          <input type="text" name="city" class="form-control input-sm" placeholder="City">
-        </div>
-        <div class="form-group">
-          <input type="text" name="state" class="form-control input-sm" placeholder="State">
-        </div> -->
         <div class="form-group">
           <input type="submit" class="btn btn-default btn-block" value="Let's look it up!">
         </div>
+      <!--restaurants about to be added-->
+        <div id="out"></div>
+
       </form>
       {% if not exist_restaurants and not exist_usernames %}
       <h3>Sorry, we don't have this in record. Please try again.</h3>
