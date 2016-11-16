@@ -22,9 +22,9 @@
       <p>Atmosphere: {{ r.atmosphere }}</p>
       <p>Consistency: {{ r.consistency }}</p>
       {% endfor %}
-    <div><b>User Comments</b><br>
+    <div><h3>User Comments</h3><br>
       {% for c in user.comments %}
-        <p>{{ c.comment }}</p>
+        <p><b>{{ c.comments.name }}</b> - {{ c.comment }}</p>
       {% endfor %}
       <p>Member Since: {{ membership }}</p>
     </div>

@@ -5,6 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Cuisine, Rating, Restaurant, Comment, Bookmark, Popularity
 from datetime import datetime
 import os
+from pprint import pprint
 
 #Settting up the back end routes.
 app = Flask(__name__)
@@ -273,53 +274,58 @@ def display_restaurant():
     return render_template("restaurant_list.html", results=results)
 
 
-@app.route("/show_addform", methods=['GET'])
-def display_form():
-    """User can add a new restaurant to database."""
-
-    return render_template("add_restaurant.html")
-
-
-@app.route("/add_restaurant", methods=['POST'])
-def add_restaurant():
+@app.route("/add_restaurant.json", methods=['POST'])
+def lookup_restaurant():
     """User can add a restaurant to the database."""
 
     if "current_user" in session:
-        new_rest = request.form["new-rest"]
+        name = request.form['name']
+        address = request.form['address']
+        city = request.form['city']
+        state = request.form['state']
+        params = {'location': address+city+state,
+                  'sort_by': 'rating',
+                  'term': name,
+                  'limit': 10,
+                  }
         token = requests.post('https://api.yelp.com/oauth2/token', data=DATA)
         access_token = token.json()['access_token']
         headers = {'Authorization': 'bearer %s' % access_token}
-        url = "https://api.yelp.com/v3/businesses/"
-        resp = requests.get(url=url+exist_rest.yelp_id, headers=headers)
+        url = 'https://api.yelp.com/v3/businesses/search'
+        resp = requests.get(url=url, params=params, headers=headers)
         rest_info = resp.json()
+        return jsonify(status='True', rest_info=rest_info)
 
+    else:
+        return jsonify(status='False')
 
 
 @app.route("/like_rest.json", methods=['POST'])
 def increment_numlike():
     """User can like the restaurant and be recorded to our database."""
 
-    if request.method == 'POST':
+    if "current_user" in session:
         restaurant_id = request.form['restaurant_id']
         current_user = session['current_user']
-        query = Popularity.query.filter_by(user_id=current_user, restaurant_id=restaurant_id).first()
-        restaurant = Restaurant.query.filter_by(restaurant_id=restaurant_id).first()
-        num_likes = restaurant.num_like_calculator()
+        query = Popularity.query.filter_by(restaurant_id=restaurant_id).first()
+        print '********', query
+
         if query is None:
             new_like = Popularity(user_id=current_user, restaurant_id=restaurant_id)
             db.session.add(new_like)
             db.session.commit()
-
-            return jsonify(status="success", num_likes=num_likes)
+            num_likes = new_like.restaurants.num_like_calculator()
+            print'*******', num_likes
+            return jsonify(status="ok", num_likes=num_likes)
+        else:
+            db.session.delete(query)
+            db.session.commit()
+            num_likes = Popularity.query.filter_by(restaurant_id=restaurant_id).count()
+            print '******', num_likes
+            return jsonify(status="unliked", num_likes=num_likes)
     else:
-        current_user = session['current_user']
-        restaurant_id = request.form['restaurant_id']
-        query = Popularity.query.filter_by(user_id=current_user, restaurant_id=restaurant_id).first()
-        db.sessinon.delete(query)
-        db.session.commit()
-        print '******', num_likes
+        return redirect("/homepage")
 
-        return jsonify(status="added", num_likes=num_likes)
 
 # with app.test_request_context():
 #     print url_for('index')

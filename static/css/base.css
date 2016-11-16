@@ -4,7 +4,7 @@ body {
 }
 
 #content {
-    background-color: beige;
+    background-color: #f5f5f5;
 }
 
 h1 {
@@ -32,4 +32,14 @@ ul#Navi {
 
 ul#Navi li {
         display: inline;
+}
+
+.count {
+    display: inline-block;
+    font-family: "thumbsUp.jpg";
+}
+
+#fake-flash {
+    display: inline-block;
+    font-size: 15px;
 }

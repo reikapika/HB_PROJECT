@@ -31,7 +31,7 @@ class Restaurant(db.Model):
     name = db.Column(db.String(50), nullable=False)
     yelp_id = db.Column(db.String(100), nullable=True)
     yelp_rating = db.Column(db.Integer, nullable=True)
-    # image = db.Column(db.String(200), nullable=True)
+    image = db.Column(db.String(200), nullable=True)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     cuisine_id = db.Column(db.Integer, db.ForeignKey('cuisine.cuisine_id'))
@@ -87,11 +87,11 @@ class Comment(db.Model):
 
     #Defining relationship with restaurant table
     comments = db.relationship('Restaurant', backref='restaurant')
-    # likes = db.relationship('Popularity', backref='comment')
+    likes = db.relationship('Popularity', backref='comment')
 
-    # def num_like_calculator(self):
-    #     """returns number of likes for a comment"""
-    #     return len(self.likes)
+    def num_like_calculator(self):
+        """returns number of likes for a comment"""
+        return len(self.likes)
 
 
 class Rating(db.Model):
@@ -133,11 +133,13 @@ class Popularity(db.Model):
                    primary_key=True,
                    autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    comment_id = db.Column(db.Integer, db.ForeignKey('comments.comment_id'))
     restaurant_id = db.Column(db.Integer,
                               db.ForeignKey('restaurants.restaurant_id'))
 
     #Defining table relationship with users and restaurants
     users = db.relationship("User", backref="popularity")
+    comments = db.relationship("Comment", backref="popularity")
     restaurants = db.relationship("Restaurant", backref="popularity")
 
 

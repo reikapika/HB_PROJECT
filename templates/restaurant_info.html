@@ -24,10 +24,10 @@
       <img id="restaurant-pic" src={{ rest_info['image_url'] }} width="70px" height="70px">
     </div>
   
-    <div class="col-md-3">
+    <div class="col-md-4">
       <b>Restaurant Information</b><br>
       <h2>{{ rest_info['name'] }}</h2>
-      Likes: <span id="num_likes"></span><br>
+      Likes: <span id="num_likes">{{ exist_rest.num_like_calculator() }}</span><br>
       Category: {{ rest_info['categories'][0]['title'] }}<br>
       Phone: {{ rest_info['phone'] }}<br>
       Price Level: {{ rest_info['price'] }}<br>
@@ -40,12 +40,14 @@
         {{ rest_info['location']['zip_code'] }}<br>  
       {% if "current_user" in session %}
       <br>
-      <button id="like-it" name="like" value="{{ exist_rest.restaurant_id}}">
-        <span class="glyphicon glyphicon-thumbs-up" style="font-size:24px"></span> Like
+      <button id="like-it" value="{{ exist_rest.restaurant_id}}">
+        <span class="glyphicon glyphicon-thumbs-up" style="font-size:16px"></span> 
+        <span id="like">Like</span>
       </button>
+      <div class="alert alert-info" id="fake-flash" data-toggle="collapse"></div>
       {% endif %}
     </div>
-    <div id="map" class="col-md-5"></div>
+    <div id="map" class="col-md-4"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATx-dTNuzvPtdyA7R0YmOYH5gD498D4Vs&callback=initMap"
     async defer></script>
 
