@@ -11,9 +11,9 @@
   <div class="well spaced" style="width:80%">
     <p>Last Login: {{ last_login }}</p>
     <h2>Account Details</h2>
-    <p>Name: {{ user.fname }} {{ user.lname }}</p>
-    <p>Username: {{ user.username }}</p>
-    <p>Favorite Cuisine: {{ user.fav_cuisine }}</p>
+    <p>Name: <b>{{ user.fname }} {{ user.lname }}</b></p>
+    <p>Username: <b>{{ user.username }}</b></p>
+    <p>Favorite Cuisine: <a href="/lookup_cuisine">{{ user.fav_cuisine }}</a></p>
     <b>Recent Ratings</b><br>
       {% for r in user.ratings %}
       <p>Restaurant: <b>{{ r.restaurant.name }}</b></p>
@@ -24,7 +24,7 @@
       {% endfor %}
     <div><h3>User Comments</h3><br>
       {% for c in user.comments %}
-        <p><b>{{ c.comments.name }}</b> - {{ c.comment }}</p>
+        <p><b><a href="/search_restaurant/{{ c.comments.restaurant_id }}">{{ c.comments.name }}</a></b> - {{ c.comment }}</p>
       {% endfor %}
       <p>Member Since: {{ membership }}</p>
     </div>

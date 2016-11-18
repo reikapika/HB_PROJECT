@@ -5,8 +5,10 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Cuisine, Rating, Restaurant, Comment, Bookmark, Popularity
 from datetime import datetime
 import os
-from pprint import pprint
-import json
+from random import choice 
+
+
+CUISINE = ['Japanese', 'Chinese', 'Korean', 'Indian', 'Vietnamese', 'Thai', 'Middle Eastern']
 
 
 #Settting up the back end routes.
@@ -22,6 +24,14 @@ DATA = {'grant_type': 'client_credentials',
         'client_secret': APP_SECRET}
 
 
+def get_all_restauratn_by_cuisine(cuisine_id):
+    """Pass in a cuisine_id and this function will make the query to get all restaurants."""
+
+    query = Restaurant.query.filter_by(cuisine_id=cuisine_id).all()
+    return query
+
+
+@staticmethod
 @app.route("/")
 def index():
     """Homepage."""
@@ -29,7 +39,24 @@ def index():
     if "current_user" in session:
         current_user_id = session["current_user"]
         user = User.query.filter_by(user_id=current_user_id).first()
-        return render_template("homepage.html", user=user)
+        # restaurant_dict = {'c0': get_all_restauratn_by_cuisine(1),
+        #                    'c1': get_all_restauratn_by_cuisine(2),
+        #                    'c2': get_all_restauratn_by_cuisine(3),
+        #                    'c3': get_all_restauratn_by_cuisine(4),
+        #                    'c4': get_all_restauratn_by_cuisine(5),
+        #                    'c5': get_all_restauratn_by_cuisine(6),
+        #                    'c6': get_all_restauratn_by_cuisine(7)
+        #                    }
+        # print restaurant_dict.keys()
+        # for k in restaurant_dict:
+        #     print k['c0']
+
+        #     randchoice = k.values().random.sample(len(k.values()), 3)
+        #     print randchoice
+
+        return render_template("homepage.html",
+                               user=user,
+                               )
     else:
         return render_template("homepage.html")
 
@@ -162,8 +189,6 @@ def remove_from_favlist(restaurant_id):
         return render_template("login.html")
 
 
-
-
 @app.route("/profile/<user_id>")
 def display_profile(user_id):
     """Display profile page for logged in users."""
@@ -192,6 +217,7 @@ def do_search():
                            exist_restaurants=exist_restaurants)
 
 
+@staticmethod
 @app.route("/search_restaurant/<restaurant_id>", methods=['GET'])
 def call_yelp(restaurant_id):
     """Make an api call for selected restaurant."""
@@ -205,12 +231,14 @@ def call_yelp(restaurant_id):
     rest_info = resp.json()
     comments = Comment.query.filter_by(restaurant_id=restaurant_id).all()
     num_likes = exist_rest.num_like_calculator()
+    target = db.session.query(Popularity).filter_by(user_id=session['current_user'], restaurant_id=restaurant_id).first()
 
     return render_template("restaurant_info.html",
                            rest_info=rest_info,
                            num_likes=num_likes,
                            exist_rest=exist_rest,
-                           comments=comments)
+                           comments=comments,
+                           target=target)
 
 
 @app.route("/ratings/<restaurant_id>", methods=['GET'])
@@ -268,36 +296,72 @@ def post_comments(restaurant_id):
 def display_restaurant():
     """This lists of all the restaurants of a selected cuisine type."""
 
-    user_input = request.form["cuisine-type"]
+    user_input = request.form["data"]
 
     selected_cuisine = Cuisine.query.filter_by(type=user_input).first()
+    print '***********', selected_cuisine
     results = selected_cuisine.restaurants
+    names = []
+    for i in results:
+        names.append(i.name)
 
-    return render_template("restaurant_list.html", results=results)
+    return jsonify(status="success", names=names)
+
+@staticmethod
+@app.route("/lookup_cuisine")
+def get_restaurant_by_cuisine():
+    """List restaurant of user's favorite cuisine."""
+
+    user = User.query.filter_by(user_id=session['current_user']).first()
+    cuisine = Cuisine.query.filter_by(type=user.fav_cuisine).first()
+    lookup = Restaurant.query.filter_by(cuisine_id=cuisine.cuisine_id).all()
+    return render_template("lookupcuisine.html", lookup=lookup)
 
 
-@app.route("/add_restaurant.json", methods=['POST'])
+@app.route("/check_restaurant.json", methods=['POST'])
 def lookup_restaurant():
     """User can add a restaurant to the database."""
 
     if "current_user" in session:
         text = request.form['name']
         print '*********', text
-        coords = request.form.get('pos')
-        # coords = json.loads(coords)
-        print '************', text, coords
-        # params = {'text': text, 'latitude': lat, 'longitude': lng}
-        # token = requests.post('https://api.yelp.com/oauth2/token', data=DATA)
-        # access_token = token.json()['access_token']
-        # headers = {'Authorization': 'bearer %s' % access_token}
-        # url = 'https://api.yelp.com/v3/autocomplete'
-        # resp = requests.get(url=url, params=params, headers=headers)
-        # rest_info = resp.json()
-        # pprint(rest_info)
-        return jsonify(status='True')
+        # lat = request.form.get('lat')
+        # lng = request.form.get('lng')
+        params = {'term': text,
+                  'location': 'San Francisco, CA'
+                  }
+
+        token = requests.post('https://api.yelp.com/oauth2/token', data=DATA)
+        access_token = token.json()['access_token']
+        headers = {'Authorization': 'bearer %s' % access_token}
+        url = 'https://api.yelp.com/v3/businesses/search'
+        resp = requests.get(url=url, params=params, headers=headers)
+        rest_info = resp.json()
+
+        #checking if returned restaurants from search falls into any of my categories
+        if rest_info:
+            for restaurant in rest_info['businesses']:
+                for alias in restaurant['categories']:
+                    needle = alias['alias'].title()
+                    if needle in CUISINE:
+                        return jsonify(status='True', restaurant=restaurant)
+                    else:
+                        return jsonify(status='Not Found.')
+        else:
+            return jsonify(status='404')
+    else:
+        return jsonify(status='prohibited')
+
+
+@app.route("/add_restaurant.json", methods=['POST'])
+def add_restaurant():
+    """Adding new restaurant upon user request."""
+
+    if "current_user" in session:
+        return
 
     else:
-        return jsonify(status='False')
+        return jsonify(status='prohibited')
 
 
 @app.route("/like_rest.json", methods=['POST'])

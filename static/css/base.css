@@ -7,6 +7,10 @@ body {
     background-color: #f5f5f5;
 }
 
+img { 
+    display: inline-block;
+}
+
 h1 {
     font-family: monospace;
     color: navy;
@@ -42,4 +46,15 @@ ul#Navi li {
 #fake-flash {
     display: inline-block;
     font-size: 15px;
+}
+
+#fixed-div {
+    height: 210px;
+    width: 249.16px;
+}
+
+.carousel-inner > .item > img,
+.carousel-inner > .item > a > img {
+  width: 70%;
+  margin: auto;
 }

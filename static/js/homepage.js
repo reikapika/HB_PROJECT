@@ -1,20 +1,20 @@
-"use strict";
+$(function () {
 
-// 'use strict';
+    function stayOnPage(evt){
+        evt.preventDefault();
 
+        var data = $("#select-val").val();
+        console.log(data);
+        $.post("/restaurant_list", {'data': data}, stayOnPageSuccess);
+      }
 
-// function listRestaurant(results) {
-//     alert("hey!")
-//     var restaurants = results;
-//     $('#list-restaurants').html(restaurants);
-//     $("#list-restaurants").toggle();
-//     console.log("Finished listRestaurant");
-// }
+      function stayOnPageSuccess(names){
+        var restaurants = names.names;
+        for (i = 0; i < restaurants.length; i++) {
+            $("#lb1").html(restaurants);
+        }
+      }
 
-// function getRestaurant(evt) {
-//   var cuisine =  $("#cuisine-btn").val();
-//     $.get('/restaurant_info', {cuisine_type: cuisine}, listRestaurant);
-//     console.log("Finished sending AJAX");
-// }
+      $("#cuisine-btn").on("click", stayOnPage);
 
-// $('#cuisine-btn').on('submit', listRestaurant);
+});

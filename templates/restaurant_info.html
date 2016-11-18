@@ -13,7 +13,7 @@
   }
 </style>
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-3">
       <b>Restaurant Information</b><br>
       <h2>{{ rest_info['name'] }}</h2>
       Likes: <span id="num_likes">{{ num_likes }}</span><br>
@@ -30,13 +30,16 @@
       {% if "current_user" in session %}
       <br>
       <button id="like-it" value="{{ exist_rest.restaurant_id}}">
-        <span class="glyphicon glyphicon-thumbs-up" style="font-size:16px"></span> 
+        {% if target %}
+        <span id="like">Unlike</span>
+        {% else %}
         <span id="like">Like</span>
+        {% endif %}
       </button>
       <div class="alert alert-info" id="fake-flash" data-toggle="collapse"></div>
        {% endif %}
       </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
       <br>
       {% if "current_user" in session %}
       <button id="fav-restaurant" class="favorite-btn" value="{{ exist_rest.restaurant_id}}">&hearts; Add to Favorite</button><br>
@@ -48,10 +51,8 @@
       <br>
       <img id="restaurant-pic" src={{ rest_info['image_url'] }} width="70px" height="70px">
     </div>
-  </div>
 <hr>
-  <div class="row">
-    <div id="map" class="col-md-6"></div>
+    <div id="map" class="col-md-4"></div>
       <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATx-dTNuzvPtdyA7R0YmOYH5gD498D4Vs&callback=initMap"
       async defer></script>
 
@@ -91,9 +92,11 @@
       }
 
       </script>
+  </div>
   <br>
   <br>
-    <div class="col-md-6">
+  <div class="row">
+    <div class="col-md-12">
        <b>Comments from Users:</b>
         {% for comment in comments %}
         <br><b>{{ comment.user.username }}</b> - "{{ comment.comment }}"
@@ -103,6 +106,6 @@
         {% endfor %}
     </div>
   </div>
-  </div>    
+</div>    
 {% endblock %}
 
