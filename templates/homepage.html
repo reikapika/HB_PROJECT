@@ -23,7 +23,7 @@
       <li><a href="/login">Log In</a></li>
       {% endif %}
     </ul>
-    <form class="cuisine-form" action="/restaurant_list" method="POST">
+    <form class="cuisine-form" action="/restaurant_list.json" method="POST">
     Choose Your Cuisine of the Day!
     <select name="cuisine-type" id="select-val">
       <option value="Japanese">Japanese</option>
@@ -56,24 +56,7 @@
 
     <!-- Wrapper for slides -->
     <div class="carousel-inner" role="listbox">
-
       <div class="item active">
-        <img src="img_chania.jpg" alt="Chania" width="460" height="345">
-        <div class="carousel-caption">
-          <h3>Chania</h3>
-          <p>The atmosphere in Chania has a touch of Florence and Venice.</p>
-        </div>
-      </div>
-
-      <div class="item">
-        <img src="img_chania2.jpg" alt="Chania" width="460" height="345">
-        <div class="carousel-caption">
-          <h3>Chania</h3>
-          <p>The atmosphere in Chania has a touch of Florence and Venice.</p>
-        </div>
-      </div>
-    
-      <div class="item">
         <img src="img_flower.jpg" alt="Flower" width="460" height="345">
         <div class="carousel-caption">
           <h3>Flowers</h3>
@@ -81,13 +64,33 @@
         </div>
       </div>
 
+    {% for cuisine, restaurant in restaurants.items() %}
+      <div class="item">
+        <img src={{ restaurant.image }} alt={{ cuisine }} width="250" height="150">
+        <div class="carousel-caption">
+          <h3>{{ restaurant.name }}</h3>
+          {% for comment in comments %}
+          <p>{{ comment }}</p>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+    
+     <!--  <div class="item">
+        <img src="img_flower.jpg" alt="Flower" width="460" height="345">
+        <div class="carousel-caption">
+          <h3>Flowers</h3>
+          <p>Beatiful flowers in Kolymbari, Crete.</p>
+        </div> -->
+     <!--  </div>
+
       <div class="item">
         <img src="img_flower2.jpg" alt="Flower" width="460" height="345">
         <div class="carousel-caption">
           <h3>Flowers</h3>
           <p>Beatiful flowers in Kolymbari, Crete.</p>
         </div>
-      </div>
+      </div> -->
   
     </div>
 
@@ -102,10 +105,6 @@
     </a>
   </div>
 </div>
-
-
-  <img src="/static/img/randomtaichi.jpeg">
 </div>
-
 
 {% endblock %}

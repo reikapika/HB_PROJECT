@@ -5,14 +5,15 @@ $(function () {
 
         var data = $("#select-val").val();
         console.log(data);
-        $.post("/restaurant_list", {'data': data}, stayOnPageSuccess);
+        $.post("/", {'data': data}, stayOnPageSuccess);
       }
 
-      function stayOnPageSuccess(names){
-        var restaurants = names.names;
-        for (i = 0; i < restaurants.length; i++) {
-            $("#lb1").html(restaurants);
-        }
+      function stayOnPageSuccess(result){
+        // var rand = restaurant_dict;
+        console.log(result);
+        // for (i = 0; i < restaurants.length; i++) {
+        //     $("myCarousel").html(restaurants);
+        // }
       }
 
       $("#cuisine-btn").on("click", stayOnPage);

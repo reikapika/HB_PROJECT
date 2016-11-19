@@ -1,11 +1,12 @@
 from jinja2 import StrictUndefined
 import requests
+# from flask_sqlalchemy import func
 from flask import Flask, render_template, request, jsonify, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Cuisine, Rating, Restaurant, Comment, Bookmark, Popularity
 from datetime import datetime
 import os
-from random import choice 
+from random import choice
 
 
 CUISINE = ['Japanese', 'Chinese', 'Korean', 'Indian', 'Vietnamese', 'Thai', 'Middle Eastern']
@@ -24,13 +25,6 @@ DATA = {'grant_type': 'client_credentials',
         'client_secret': APP_SECRET}
 
 
-def get_all_restauratn_by_cuisine(cuisine_id):
-    """Pass in a cuisine_id and this function will make the query to get all restaurants."""
-
-    query = Restaurant.query.filter_by(cuisine_id=cuisine_id).all()
-    return query
-
-
 @staticmethod
 @app.route("/")
 def index():
@@ -39,25 +33,23 @@ def index():
     if "current_user" in session:
         current_user_id = session["current_user"]
         user = User.query.filter_by(user_id=current_user_id).first()
-        # restaurant_dict = {'c0': get_all_restauratn_by_cuisine(1),
-        #                    'c1': get_all_restauratn_by_cuisine(2),
-        #                    'c2': get_all_restauratn_by_cuisine(3),
-        #                    'c3': get_all_restauratn_by_cuisine(4),
-        #                    'c4': get_all_restauratn_by_cuisine(5),
-        #                    'c5': get_all_restauratn_by_cuisine(6),
-        #                    'c6': get_all_restauratn_by_cuisine(7)
-        #                    }
-        # print restaurant_dict.keys()
-        # for k in restaurant_dict:
-        #     print k['c0']
-
-        #     randchoice = k.values().random.sample(len(k.values()), 3)
-        #     print randchoice
+        restaurant_dict = {'japanese': get_sample_restaurant_by_cuisine(1),
+                           'chinese': get_sample_restaurant_by_cuisine(2),
+                           'korean': get_sample_restaurant_by_cuisine(3),
+                           'indian': get_sample_restaurant_by_cuisine(4),
+                           'vietnamese': get_sample_restaurant_by_cuisine(5),
+                           'thai': get_sample_restaurant_by_cuisine(6),
+                           'middle_east': get_sample_restaurant_by_cuisine(7)
+                           }
+        lst_of_restaurants = restaurant_dict.values()
+        for restaurant in lst_of_restaurants:
+            lst_of_comments = get_comments_by_restaurant(restaurant.restaurant_id)
 
         return render_template("homepage.html",
                                user=user,
-                               )
-    else:
+                               restaurants=restaurant_dict,
+                               comments=lst_of_comments)
+
         return render_template("homepage.html")
 
 
@@ -179,7 +171,6 @@ def remove_from_favlist(restaurant_id):
     if "current_user" in session:
 
         bookmark = Bookmark.query.filter_by(restaurant_id=restaurant_id).first()
-        print '************', bookmark
         db.session.delete(bookmark)
         db.session.commit()
         return redirect("/list_favlist/%s" % session['current_user'])
@@ -267,7 +258,7 @@ def post_rating(restaurant_id):
     db.session.add(new_ratings)
     db.session.commit()
     flash("You're ratings have been added!")
-    return redirect("/")
+    return redirect("/search_restaurant/%s" % restaurant_id)
 
 
 @app.route("/comments/<restaurant_id>", methods=['GET'])
@@ -289,7 +280,7 @@ def post_comments(restaurant_id):
                           )
     db.session.add(new_comment)
     db.session.commit()
-    return redirect("/")
+    return redirect("/search_restaurant/%s" % restaurant_id)
 
 
 @app.route("/restaurant_list", methods=['POST'])
@@ -299,13 +290,13 @@ def display_restaurant():
     user_input = request.form["data"]
 
     selected_cuisine = Cuisine.query.filter_by(type=user_input).first()
-    print '***********', selected_cuisine
     results = selected_cuisine.restaurants
     names = []
     for i in results:
         names.append(i.name)
 
     return jsonify(status="success", names=names)
+
 
 @staticmethod
 @app.route("/lookup_cuisine")
@@ -402,6 +393,24 @@ def increment_numlike():
 #     # print url_for('profile', username='John Doe')
 
 ###############################################################################
+#Helper functions
+def get_sample_restaurant_by_cuisine(cuisine_id):
+    """Get one sample restaurant from each cuisine."""
+
+    query = Restaurant.query.filter_by(cuisine_id=cuisine_id).all()
+    result = choice(query)
+    return result
+
+
+def get_comments_by_restaurant(restaurant_id):
+    """Get a random comment for restaurant passed in the parameter."""
+
+    query = Restaurant.query.filter_by(restaurant_id=restaurant_id).first()
+    lst_of_comments = query.restaurant
+    result = choice(lst_of_comments)
+    return result
+
+
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension

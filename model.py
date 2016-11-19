@@ -36,7 +36,7 @@ class Restaurant(db.Model):
     longitude = db.Column(db.Float, nullable=False)
     cuisine_id = db.Column(db.Integer, db.ForeignKey('cuisine.cuisine_id'))
 
-    #Defining relationship with comments and ratings table
+    #Defining relationship with likes and ratings table
 
     ratings = db.relationship('Rating', backref='restaurant')
     likes = db.relationship('Popularity', backref='restaurant')
