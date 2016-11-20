@@ -1,6 +1,6 @@
 
 var userLatlng = {lat: {{ rest_info['coordinates']['latitude'] }},
-                        lng: {{ rest_info['coordinates']['longitude'] }}};
+                  lng: {{ rest_info['coordinates']['longitude'] }}};
 var map;
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
@@ -14,9 +14,10 @@ function initMap() {
     map: map
   });
 
-  var contentString = '<div><h2>{{ rest_info['name'] }}</h2></div>' + 
-           '<p>{{ rest_info['location']['address1'] }}</p>' +
-           '<p>{{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }}</p>';
+  var contentString = '<div><h3>{{ rest_info['name'] }}</h3></div>' + 
+           '<div><p>{{ rest_info['location']['address1'] }}</p>' +
+           '<p>{{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }}</p></div>'
+           + '<a>Direction</a>';
   var infowindow = new google.maps.InfoWindow({
   content: contentString
   });

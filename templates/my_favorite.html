@@ -3,19 +3,17 @@
 {% block content %}
 <h2>Restaurants Marked as Favorites</h2>
 {% if restaurants %}
-  {% for restaurant in restaurants %}
-  <div class="col-md-8">
+  <div class="col-md-12">
+    {% for restaurant in restaurants %}
     <div class="col-md-4">
-      <li>
-        <img src={{ restaurant.image }} width="200px" height="200px">
+      <img src={{ restaurant.image }} width="250px" height="180px"><br>
+      <form action="/remove_favor/{{ restaurant.restaurant_id }}" method="POST">
         <a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a>
-        <form action="/remove_favor/{{ restaurant.restaurant_id }}" method="POST">
-          <span class="glyphicon glyphicon-trash"><input type="submit" value="Remove"></span>
-        </form>
-      </li>
+        <span class="glyphicon glyphicon-trash"><input type="submit" value="Remove"></span>
+      </form>
     </div>
+    {% endfor %}
   </div>
-  {% endfor %}
 {% else %}
   <div class="row">
     <div class="col-md-10">

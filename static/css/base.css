@@ -55,6 +55,8 @@ ul#Navi li {
 
 .carousel-inner > .item > img,
 .carousel-inner > .item > a > img {
-  width: 70%;
+  width: 730px;
+  height: 435px;
   margin: auto;
+  overflow: auto;
 }

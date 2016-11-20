@@ -76,10 +76,10 @@
               map: map
             });
 
-            var contentString = 
-              '<div><h2>{{ rest_info['name'] }}</h2></div>' + 
-              '<p>{{ rest_info['location']['address1'] }}</p>' +
-              '<p>{{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }}</p>'
+            var contentString = '<div><h3>{{ rest_info['name'] }}</h3></div>' + 
+           '<div>{{ rest_info['location']['address1'] }}<br>' + 
+           '{{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }}</div>'
+           + '<b><a>Direction</a></b>'
             ;
 
             var infowindow = new google.maps.InfoWindow({
@@ -99,7 +99,7 @@
     <div class="col-md-12">
        <b>Comments from Users:</b>
         {% for comment in comments %}
-        <br><b>{{ comment.user.username }}</b> - "{{ comment.comment }}"
+        <br><b><a href="/profile/{{ comment.user.user_id }}">{{ comment.user.username }}</a></b> - "{{ comment.comment }}"
         {% if comment.num_like_calculator() %}
           <span>{{ comment.num_like_calculator() }}</span>
         {% endif %}

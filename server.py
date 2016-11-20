@@ -283,11 +283,23 @@ def post_comments(restaurant_id):
     return redirect("/search_restaurant/%s" % restaurant_id)
 
 
+@app.route("/remove_comment.json", methods=['POST'])
+def remove_comment():
+    """Remove a comment."""
+
+    comment_id = request.form['id']
+    query = Comment.query.filter_by(comment_id=comment_id).first()
+    db.session.delete(query)
+    db.session.commit()
+
+    return jsonify(status="removed")
+
+
 @app.route("/restaurant_list", methods=['POST'])
 def display_restaurant():
     """This lists of all the restaurants of a selected cuisine type."""
 
-    user_input = request.form["data"]
+    user_input = request.form["cuisine-type"]
 
     selected_cuisine = Cuisine.query.filter_by(type=user_input).first()
     results = selected_cuisine.restaurants
@@ -295,7 +307,9 @@ def display_restaurant():
     for i in results:
         names.append(i.name)
 
-    return jsonify(status="success", names=names)
+    return render_template("restaurant_list.html",
+                           cuisine=user_input,
+                           results=results)
 
 
 @staticmethod
@@ -306,7 +320,10 @@ def get_restaurant_by_cuisine():
     user = User.query.filter_by(user_id=session['current_user']).first()
     cuisine = Cuisine.query.filter_by(type=user.fav_cuisine).first()
     lookup = Restaurant.query.filter_by(cuisine_id=cuisine.cuisine_id).all()
-    return render_template("lookupcuisine.html", lookup=lookup)
+    cuisine = user.fav_cuisine
+    return render_template("lookupcuisine.html",
+                           lookup=lookup,
+                           cuisine=cuisine)
 
 
 @app.route("/check_restaurant.json", methods=['POST'])
@@ -337,7 +354,7 @@ def lookup_restaurant():
                     if needle in CUISINE:
                         return jsonify(status='True', restaurant=restaurant)
                     else:
-                        return jsonify(status='Not Found.')
+                        return jsonify(status='Not Found')
         else:
             return jsonify(status='404')
     else:
@@ -394,6 +411,7 @@ def increment_numlike():
 
 ###############################################################################
 #Helper functions
+
 def get_sample_restaurant_by_cuisine(cuisine_id):
     """Get one sample restaurant from each cuisine."""
 

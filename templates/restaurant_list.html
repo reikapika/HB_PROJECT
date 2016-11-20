@@ -1,9 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-<div class=col-xs-10>
-    <ul>List of Restaurants:
-        {% for restaurant in results %}
-        <li><a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a></li>
-        {% endfor %}
+<h3>List of {{ cuisine }} Restaurants!</h3>
+<hr>
+<div class="row">
+  <div class="col-md-12">
+    {% for restaurant in results %}
+    <div class="col-md-4">
+      <img src={{ restaurant.image }} width="250px" height="180px">
+      <br>
+      <form action="/remove_favor/{{ restaurant.restaurant_id }}" method="POST">
+        <a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a>
+      </form>
+      <br>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}

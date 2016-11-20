@@ -9,6 +9,7 @@
     </div>
   </div>
   <div class="well spaced" style="width:80%">
+    <p>Member Since: {{ membership }}</p>
     <p>Last Login: {{ last_login }}</p>
     <h2>Account Details</h2>
     <p>Name: <b>{{ user.fname }} {{ user.lname }}</b></p>
@@ -24,9 +25,13 @@
       {% endfor %}
     <div><h3>User Comments</h3><br>
       {% for c in user.comments %}
-        <p><b><a href="/search_restaurant/{{ c.comments.restaurant_id }}">{{ c.comments.name }}</a></b> - {{ c.comment }}</p>
+      <div class="comment-div"><b><a href="/search_restaurant/{{ c.comments.restaurant_id }}">{{ c.comments.name }}</a></b> - {{ c.comment }}
+        <span id="commentBtn">
+          <input name="value" type="hidden" value={{ c.comment_id }}>
+          <a href='/remove_comment.json'>Remove</a>
+        </span>
+      </div>
       {% endfor %}
-      <p>Member Since: {{ membership }}</p>
     </div>
   </div>
 </div>
