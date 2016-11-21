@@ -10,6 +10,8 @@
           <input type="text" id="name" class="form-control input-sm" placeholder="Restaurant Name">
         </div>
 
+        <input id="cuisine" type="hidden" value="" />
+
         <!--Modal button-->
         <div class="form-group">
           <button type="button" class="btn btn-info btn-md" id="myBtn">Let's look it up!</button>
@@ -45,6 +47,7 @@
           </div>
         </div>
       </div>
+    </div>
 
 
       {% if not exist_restaurants and not exist_usernames %}

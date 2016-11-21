@@ -287,12 +287,15 @@ def post_comments(restaurant_id):
 def remove_comment():
     """Remove a comment."""
 
+    print '************', request.form
     comment_id = request.form['id']
     query = Comment.query.filter_by(comment_id=comment_id).first()
-    db.session.delete(query)
-    db.session.commit()
-
-    return jsonify(status="removed")
+    if query:
+        db.session.delete(query)
+        db.session.commit()
+        return jsonify(status="removed")
+    else:
+        return jsonify(status="error")
 
 
 @app.route("/restaurant_list", methods=['POST'])
@@ -332,7 +335,6 @@ def lookup_restaurant():
 
     if "current_user" in session:
         text = request.form['name']
-        print '*********', text
         # lat = request.form.get('lat')
         # lng = request.form.get('lng')
         params = {'term': text,
@@ -365,8 +367,43 @@ def lookup_restaurant():
 def add_restaurant():
     """Adding new restaurant upon user request."""
 
+    #make an api call and instantiate a new restaurant obj.
+    print '***********', request.form
     if "current_user" in session:
-        return
+
+        # name = data['name']
+        # # cuisine_name = data['cuisine-id']
+        # query = Cuisine.query.filter_by(type=cuisine_name).first()
+        # cuisine_id = query.cuisine_id
+        params = {'term': name,
+                  'location': 'San Francisco, CA'
+                  }
+
+        token = requests.post('https://api.yelp.com/oauth2/token', data=DATA)
+        access_token = token.json()['access_token']
+        headers = {'Authorization': 'bearer %s' % access_token}
+        url = 'https://api.yelp.com/v3/businesses/search'
+        resp = requests.get(url=url, params=params, headers=headers)
+        rest_info = resp.json()
+
+        yelp_id = rest_info['businesses'].get('id')
+        latitude = rest_info['businesses']['coordinates'].get('latitude')
+        longitude = rest_info['businesses']['coordinates'].get('longitude')
+        yelp_rating = rest_info['businesses'].get('rating')
+        image = rest_info['businesses'].get('image_url')
+
+        new_restaurant = Restaurant(name=name,
+                                    yelp_id=yelp_id,
+                                    yelp_rating=yelp_rating,
+                                    image=image,
+                                    latitude=latitude,
+                                    longitude=longitude,
+                                    cuisine_id=cuisine_id,
+                                    )
+
+        db.session.add(new_restaurant)
+        db.session.commit()
+        return jsonify(status='added')
 
     else:
         return jsonify(status='prohibited')

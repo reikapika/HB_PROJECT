@@ -25,11 +25,10 @@
       {% endfor %}
     <div><h3>User Comments</h3><br>
       {% for c in user.comments %}
-      <div class="comment-div"><b><a href="/search_restaurant/{{ c.comments.restaurant_id }}">{{ c.comments.name }}</a></b> - {{ c.comment }}
-        <span id="commentBtn">
-          <input name="value" type="hidden" value={{ c.comment_id }}>
-          <a href='/remove_comment.json'>Remove</a>
-        </span>
+      <div class="comment-div">
+        <b><a href="/search_restaurant/{{ c.comments.restaurant_id }}">{{ c.comments.name }}</a></b> - {{ c.comment }}
+          <input id="value" type="hidden" value={{ c.comment_id }}>
+          <a href='/remove_comment.json' id="commentBtn">Remove</a>
       </div>
       {% endfor %}
     </div>
