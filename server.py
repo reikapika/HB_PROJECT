@@ -391,19 +391,25 @@ def add_restaurant():
         yelp_rating = adict.get('rating')
         image = adict.get('image_url')
 
-        #Instantiate new restaurant object to database
-        new_restaurant = Restaurant(name=name,
-                                    yelp_id=yelp_id,
-                                    yelp_rating=yelp_rating,
-                                    image=image,
-                                    latitude=latitude,
-                                    longitude=longitude,
-                                    cuisine_id=cuisine_id,
-                                    )
-        db.session.add(new_restaurant)
-        db.session.commit()
-        flash("You have successfully added this restaurant!")
-        return jsonify(status='added')
+        #check if the restaurant has been added once.
+        exist_rest = Restaurant.query.filter_by(yelp_id=yelp_id).first()
+        if exist_rest:
+            return jsonify(status='exist')
+
+        else:
+            #Instantiate new restaurant object to database
+            new_restaurant = Restaurant(name=name,
+                                        yelp_id=yelp_id,
+                                        yelp_rating=yelp_rating,
+                                        image=image,
+                                        latitude=latitude,
+                                        longitude=longitude,
+                                        cuisine_id=cuisine_id,
+                                        )
+            db.session.add(new_restaurant)
+            db.session.commit()
+            flash("You have successfully added this restaurant!")
+            return jsonify(status='success')
 
     else:
         return jsonify(status='prohibited')

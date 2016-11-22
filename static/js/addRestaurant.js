@@ -40,10 +40,10 @@ $(function () {
             document.getElementById('cuisine').value = restaurant.categories[0].title;
 
           } else if (result.status==='Not Found'){
-              $('#restaurant').html('Please enter a valid restaurant name.');
+              $('.modal-content').html('Please enter a valid restaurant name.');
      
           } else{
-              $('#restaurant').html('Please enter an Asian restaurant and try again.');
+              $('.modal-content').html('Please enter an Asian restaurant and try again.');
           }
       }
   }
@@ -68,6 +68,11 @@ $(function () {
 
     function addRestaurantSuccess(result){
         console.log(result);
-        $('#myModal').modal('hide');
+        if (result.status === 'success'){
+          $('#myModal').modal('hide');
+        } else{
+          $('.modal-content').html('This restaurant is already our list.');
+        }
+        
     }
 });
