@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pocket Asia</title>
+  <title>San Franasia</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/base.css">
 </head>
@@ -13,7 +13,7 @@
 <body>
 <!-- header -->
   <header>
-    <a href="/"><img src="/static/img/headerLogo.png" alt="PocketAsia" position="center" width="300px" height="100px" class="btn" /></a>
+    <a href="/"><img src="/static/img/headerLogo.png" alt="SanFranasia" position="center" width="300px" height="100px" class="btn" /></a>
     <br>
   </header>
 
@@ -32,6 +32,26 @@
 
   <!--body-->
   <div class="col-md-10 col-md-offset-1" id="content">
+  <ul class="nav nav-pills">
+    <li>
+    <form action="/search" method="POST">
+      <input type="text" name="search-form">
+    <input type="submit" value="Search for Restaurants or Users">
+    </form>
+    </li>  
+
+    <!--limiting non-users to access personal profiles-->
+    {% if "current_user" in session %}
+    <li><a href="/profile/{{ session.user_id }}">My Account</a></li>
+    <li>
+    <form action="/logout" method="POST">
+      <input type="submit" value="Log out">
+    </form>
+    </li>
+    {% else %}
+    <li><a href="/login">Log In</a></li>
+    {% endif %}
+  </ul>
   {% block content %}
   {% endblock %}
   <div>

@@ -3,26 +3,7 @@
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <ul class="nav nav-pills">
-      <li>
-      <form action="/search" method="POST">
-        <input type="text" name="search-form">
-      <input type="submit" value="Search for Restaurants or Users">
-      </form>
-      </li>  
-
-      <!--limiting non-users to access personal profiles-->
-      {% if "current_user" in session %}
-      <li><a href="/profile/{{ user.user_id }}">My Account</a></li>
-      <li>
-      <form action="/logout" method="POST">
-        <input type="submit" value="Log out">
-      </form>
-      </li>
-      {% else %}
-      <li><a href="/login">Log In</a></li>
-      {% endif %}
-    </ul>
+    
     <form class="cuisine-form" action="/restaurant_list" method="POST">
     Choose Your Cuisine of the Day!
     <select name="cuisine-type" id="select-val">
@@ -67,7 +48,7 @@
       <div class="item">
         <img src={{ restaurant.image }} alt={{ restaurant.name }} height="200px" width="300px">
         <div class="carousel-caption">
-          <h3>{{ restaurant.name }}</h3>
+          <h3><a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a></h3>
           <p>{{ comments.comment }}</p>
         </div>
       </div>

@@ -49,44 +49,47 @@
       </div>
     </div>
 
-
-      {% if not exist_restaurants and not exist_usernames %}
-      <h3>Sorry, we don't have this in record. Please try again.</h3>
-      <br>
-      {% endif %}
+      <!---Raise error message when user type random things that are neither usernames or restaurant names-->
   </div>
 </div>
-{% if exist_restaurants %}
-<div class="row">
-  <div class="col-md-12">
-    <div class="col-md-9">
-      <h2>Restaurants Which Match Your Search:</h2>
+  {% if exist_restaurants %}
+    <div class="row">
+      <div class="col-md-12">
+        <div class="col-md-9">
+          <h2>Restaurants Which Match Your Search:</h2>
 
-      <!--restaurants about to be added-->
+        <!--Restaurants about to be added-->
       
-      <hr>
-      {% for restaurant in exist_restaurants %}
-        <div class="col-md-4" id="fixed-div">
-        <a href="/search_restaurant/{{ restaurant.restaurant_id }}"><br>
-          <img src="{{ restaurant.image }}" height="150px" width="200px">
-          <br>{{ restaurant.name }}<br>
-        </a>
-        </div>
-      {% endfor %}
-      {% endif %}
+        <hr>
+        {% for restaurant in exist_restaurants %}
+          <div class="col-md-4" id="fixed-div">
+          <a href="/search_restaurant/{{ restaurant.restaurant_id }}"><br>
+            <img src="{{ restaurant.image }}" height="150px" width="200px">
+            <br>{{ restaurant.name }}<br>
+          </a>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="col-md-3">
+  {% elif exist_usernames %}
+        <h3>Users Who Match Your Search:</h3>
+        {% for username in exist_usernames %}
+        <li>
+          <a href="/profile/{{ username.user_id }}">{{ username.username }}</a>
+        </li>
+        {% endfor %}
+      </div>
     </div>
-    <div class="col-md-3">
-      {% if exist_usernames %}
-      <h3>Users Who Match Your Search:</h3>
-      {% for username in exist_usernames %}
-      <li>
-        <a href="/profile/{{ username.user_id }}">{{ username.username }}</a>
-      </li>
-      {% endfor %}
-      {% endif %}
-    </div>
-  </div>
   </div>
 </div>
+</div>
+  {% else %}
+  <div class="row">
+    <h3>Sorry, we don't have this in record. Please try again.</h3>
+    <br>
+  </div>
+  {% endif %}
+  
+
       
 {% endblock %}

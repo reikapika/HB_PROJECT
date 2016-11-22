@@ -1,61 +1,66 @@
 {% extends "base.html" %}
+
 {% block content %}
-<style>
-  #map {
-    height: 300px;
-  }
-  html, body {
-    height: 100%; margin: 30px; padding: 10px;
-  }
-  #restaurant-pic{
-    width:200px;
-    height:200px;
-  }
-</style>
+
   <div class="row">
-    <div class="col-md-3">
-      <b>Restaurant Information</b><br>
-      <h2>{{ rest_info['name'] }}</h2>
-      Likes: <span id="num_likes">{{ num_likes }}</span><br>
-      Category: {{ rest_info['categories'][0]['title'] }}<br>
-      Phone: {{ rest_info['phone'] }}<br>
-      Price Level: {{ rest_info['price'] }}<br>
-      Hours: 
-        {{ rest_info['hours'][0]['open'][0]['start']}} 
-        - {{ rest_info['hours'][0]['open'][0]['end']}}<br>
-      Location: 
-        {{ rest_info['location']['address1'] }}<br>
-        {{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }} 
-        {{ rest_info['location']['zip_code'] }}<br>  
-      {% if "current_user" in session %}
-      <br>
-      <button id="like-it" value="{{ exist_rest.restaurant_id}}">
-        {% if target %}
-        <span id="like">Unlike</span>
-        {% else %}
-        <span id="like">Like</span>
+    <div class="col-md-12">
+      <div class="col-md-3">
+        <b>Restaurant Information</b><br>
+        <h2>{{ rest_info['name'] }}</h2>
+        Likes: <span id="num_likes">{{ num_likes }}</span><br>
+        Category: {{ rest_info['categories'][0]['title'] }}<br>
+        Phone: {{ rest_info['phone'] }}<br>
+        Price Level: {{ rest_info['price'] }}<br>
+        Hours: 
+          {{ rest_info['hours'][0]['open'][0]['start']}} 
+          - {{ rest_info['hours'][0]['open'][0]['end']}}<br>
+        Location: 
+          {{ rest_info['location']['address1'] }}<br>
+          {{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }} 
+          {{ rest_info['location']['zip_code'] }}<br>  
+        {% if "current_user" in session %}
+        <br>
+        <button id="like-it" value="{{ exist_rest.restaurant_id}}">
+          {% if target %}
+          <span id="like">Unlike</span>
+          {% else %}
+          <span id="like">Like</span>
+          {% endif %}
+        </button>
+        <div class="alert alert-info" id="fake-flash" data-toggle="collapse"></div>
+         {% endif %}
+        </div>
+      <div class="col-md-4">
+        <br>
+        {% if "current_user" in session %}
+        <button id="fav-restaurant" class="favorite-btn" value="{{ exist_rest.restaurant_id}}">&hearts; Add to Favorite</button><br>
+        <a href="/comments/{{ exist_rest.restaurant_id }}">New Comment</a>
+        <br>
+        <a href="/ratings/{{ exist_rest.restaurant_id }}">New Rating</a>
         {% endif %}
-      </button>
-      <div class="alert alert-info" id="fake-flash" data-toggle="collapse"></div>
-       {% endif %}
+        <br>
+        <br>
+        <img id="restaurant-pic" src={{ rest_info['image_url'] }} width="70px" height="70px">
       </div>
-    <div class="col-md-4">
-      <br>
-      {% if "current_user" in session %}
-      <button id="fav-restaurant" class="favorite-btn" value="{{ exist_rest.restaurant_id}}">&hearts; Add to Favorite</button><br>
-      <a href="/comments/{{ exist_rest.restaurant_id }}">New Comment</a>
-      <br>
-      <a href="/ratings/{{ exist_rest.restaurant_id }}">New Rating</a>
-      {% endif %}
-      <br>
-      <br>
-      <img id="restaurant-pic" src={{ rest_info['image_url'] }} width="70px" height="70px">
-    </div>
-<hr>
+  <hr>
     <div id="map" class="col-md-4"></div>
       <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATx-dTNuzvPtdyA7R0YmOYH5gD498D4Vs&callback=initMap"
       async defer></script>
 
+      <!---Map CSS-->
+        <style>
+          #map {
+            height: 300px;
+          }
+          
+          #restaurant-pic{
+            width:200px;
+            height:200px;
+          }
+        </style>
+
+
+      <!---Google Map API-->
       <script>
 
         var userLatlng = {
@@ -92,6 +97,7 @@
       }
 
       </script>
+    </div>
   </div>
   <br>
   <br>
@@ -106,6 +112,7 @@
         {% endfor %}
     </div>
   </div>
-</div>    
+</div>  
+
 {% endblock %}
 

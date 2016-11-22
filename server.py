@@ -1,12 +1,12 @@
 from jinja2 import StrictUndefined
 import requests
-# from flask_sqlalchemy import func
 from flask import Flask, render_template, request, jsonify, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Cuisine, Rating, Restaurant, Comment, Bookmark, Popularity
 from datetime import datetime
 import os
 from random import choice
+import pprint
 
 
 CUISINE = ['Japanese', 'Chinese', 'Korean', 'Indian', 'Vietnamese', 'Thai', 'Middle Eastern']
@@ -25,32 +25,25 @@ DATA = {'grant_type': 'client_credentials',
         'client_secret': APP_SECRET}
 
 
-@staticmethod
 @app.route("/")
 def index():
     """Homepage."""
 
-    if "current_user" in session:
-        current_user_id = session["current_user"]
-        user = User.query.filter_by(user_id=current_user_id).first()
-        restaurant_dict = {'japanese': get_sample_restaurant_by_cuisine(1),
-                           'chinese': get_sample_restaurant_by_cuisine(2),
-                           'korean': get_sample_restaurant_by_cuisine(3),
-                           'indian': get_sample_restaurant_by_cuisine(4),
-                           'vietnamese': get_sample_restaurant_by_cuisine(5),
-                           'thai': get_sample_restaurant_by_cuisine(6),
-                           'middle_east': get_sample_restaurant_by_cuisine(7)
-                           }
-        lst_of_restaurants = restaurant_dict.values()
-        for restaurant in lst_of_restaurants:
-            lst_of_comments = get_comments_by_restaurant(restaurant.restaurant_id)
+    restaurant_dict = {'japanese': get_sample_restaurant_by_cuisine(1),
+                       'chinese': get_sample_restaurant_by_cuisine(2),
+                       'korean': get_sample_restaurant_by_cuisine(3),
+                       'indian': get_sample_restaurant_by_cuisine(4),
+                       'vietnamese': get_sample_restaurant_by_cuisine(5),
+                       'thai': get_sample_restaurant_by_cuisine(6),
+                       'middle_east': get_sample_restaurant_by_cuisine(7)
+                       }
+    lst_of_restaurants = restaurant_dict.values()
+    for restaurant in lst_of_restaurants:
+        lst_of_comments = get_comments_by_restaurant(restaurant.restaurant_id)
 
-        return render_template("homepage.html",
-                               user=user,
-                               restaurants=restaurant_dict,
-                               comments=lst_of_comments)
-
-        return render_template("homepage.html")
+    return render_template("homepage.html",
+                           restaurants=restaurant_dict,
+                           comments=lst_of_comments)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -168,6 +161,9 @@ def list_favorite(user_id):
 def remove_from_favlist(restaurant_id):
     """Removing the restaurant from user's favorite list."""
 
+    print "*" * 20, "remove_favor"
+
+
     if "current_user" in session:
 
         bookmark = Bookmark.query.filter_by(restaurant_id=restaurant_id).first()
@@ -257,7 +253,7 @@ def post_rating(restaurant_id):
                          )
     db.session.add(new_ratings)
     db.session.commit()
-    flash("You're ratings have been added!")
+    flash("Your ratings have been added!")
     return redirect("/search_restaurant/%s" % restaurant_id)
 
 
@@ -280,6 +276,7 @@ def post_comments(restaurant_id):
                           )
     db.session.add(new_comment)
     db.session.commit()
+    flash("Your comments have been added!")
     return redirect("/search_restaurant/%s" % restaurant_id)
 
 
@@ -293,7 +290,7 @@ def remove_comment():
     if query:
         db.session.delete(query)
         db.session.commit()
-        return jsonify(status="removed")
+        return jsonify(status="removed", id=comment_id)
     else:
         return jsonify(status="error")
 
@@ -368,13 +365,12 @@ def add_restaurant():
     """Adding new restaurant upon user request."""
 
     #make an api call and instantiate a new restaurant obj.
-    print '***********', request.form
     if "current_user" in session:
-
-        # name = data['name']
-        # # cuisine_name = data['cuisine-id']
-        # query = Cuisine.query.filter_by(type=cuisine_name).first()
-        # cuisine_id = query.cuisine_id
+        data = request.form
+        name = data.get('name')
+        cuisine_name = data.get('cuisine')
+        query = Cuisine.query.filter_by(type=cuisine_name).first()
+        cuisine_id = query.cuisine_id
         params = {'term': name,
                   'location': 'San Francisco, CA'
                   }
@@ -386,12 +382,16 @@ def add_restaurant():
         resp = requests.get(url=url, params=params, headers=headers)
         rest_info = resp.json()
 
-        yelp_id = rest_info['businesses'].get('id')
-        latitude = rest_info['businesses']['coordinates'].get('latitude')
-        longitude = rest_info['businesses']['coordinates'].get('longitude')
-        yelp_rating = rest_info['businesses'].get('rating')
-        image = rest_info['businesses'].get('image_url')
+        #Assuming the first result is what user wants
+        adict = rest_info['businesses'][0]
 
+        yelp_id = adict.get('id')
+        latitude = adict['coordinates'].get('latitude')
+        longitude = adict['coordinates'].get('longitude')
+        yelp_rating = adict.get('rating')
+        image = adict.get('image_url')
+
+        #Instantiate new restaurant object to database
         new_restaurant = Restaurant(name=name,
                                     yelp_id=yelp_id,
                                     yelp_rating=yelp_rating,
@@ -400,9 +400,9 @@ def add_restaurant():
                                     longitude=longitude,
                                     cuisine_id=cuisine_id,
                                     )
-
         db.session.add(new_restaurant)
         db.session.commit()
+        flash("You have successfully added this restaurant!")
         return jsonify(status='added')
 
     else:
@@ -415,11 +415,8 @@ def increment_numlike():
 
     if "current_user" in session:
         restaurant_id = request.form['restaurant_id']
-        print '********', restaurant_id
         current_user = session['current_user']
-        print '********', current_user
         target = db.session.query(Popularity).filter_by(user_id=current_user, restaurant_id=restaurant_id).first()
-        print '********', type(target)
 
         #check if the user has already liked this restaurant
         if target is not None:
