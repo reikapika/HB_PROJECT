@@ -2,110 +2,115 @@
 
 {% block content %}
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="col-md-3">
-        <b>Restaurant Information</b><br>
-        <h2>{{ rest_info['name'] }}</h2>
-        Likes: <span id="num_likes">{{ num_likes }}</span><br>
-        Category: {{ rest_info['categories'][0]['title'] }}<br>
-        Phone: {{ rest_info['phone'] }}<br>
-        Price Level: {{ rest_info['price'] }}<br>
-        Hours: 
-          {{ rest_info['hours'][0]['open'][0]['start']}} 
-          - {{ rest_info['hours'][0]['open'][0]['end']}}<br>
-        Location: 
-          {{ rest_info['location']['address1'] }}<br>
-          {{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }} 
-          {{ rest_info['location']['zip_code'] }}<br>  
-        {% if "current_user" in session %}
-        <br>
-        <button id="like-it" value="{{ exist_rest.restaurant_id}}">
-          {% if target %}
-          <span id="like">Unlike</span>
-          {% else %}
-          <span id="like">Like</span>
-          {% endif %}
-        </button>
-        <div class="alert alert-info" id="fake-flash" data-toggle="collapse"></div>
-         {% endif %}
-        </div>
-      <div class="col-md-4">
-        <br>
-        {% if "current_user" in session %}
-        <button id="fav-restaurant" class="favorite-btn" value="{{ exist_rest.restaurant_id}}">&hearts; Add to Favorite</button><br>
-        <a href="/comments/{{ exist_rest.restaurant_id }}">New Comment</a>
-        <br>
-        <a href="/ratings/{{ exist_rest.restaurant_id }}">New Rating</a>
+<div class="row">
+  <div class="col-md-12">
+    <div class="col-md-3">
+      <b>Restaurant Information</b><br>
+      <h2>{{ rest_info['name'] }}</h2>
+      Likes: <span id="num_likes">{{ num_likes }}</span><br>
+      Category: {{ rest_info['categories'][0]['title'] }}<br>
+      Phone: {{ rest_info['phone'] }}<br>
+      Price Level: {{ rest_info['price'] }}<br>
+      Hours: 
+        {{ rest_info['hours'][0]['open'][0]['start']}} 
+        - {{ rest_info['hours'][0]['open'][0]['end']}}<br>
+      Location: 
+        {{ rest_info['location']['address1'] }}<br>
+        {{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }} 
+        {{ rest_info['location']['zip_code'] }}<br>  
+      {% if "current_user" in session %}
+      <br>
+      <button id="like-it" value="{{ exist_rest.restaurant_id}}">
+        {% if target %}
+        <span id="like">Unlike</span>
+        {% else %}
+        <span id="like">Like</span>
         {% endif %}
-        <br>
-        <br>
-        <img id="restaurant-pic" src={{ rest_info['image_url'] }} width="70px" height="70px">
+      </button>
+      <div class="alert alert-info" id="fake-flash" hidden>
       </div>
-  <hr>
+       {% endif %}
+    </div>
+    <div class="col-md-4">
+      <br>
+      {% if "current_user" in session %}
+      <button id="fav-restaurant" class="favorite-btn" value="{{ exist_rest.restaurant_id}}">&hearts; Add to Favorite</button><br>
+      <a href="/comments/{{ exist_rest.restaurant_id }}">New Comment</a>
+      <br>
+      <a href="/ratings/{{ exist_rest.restaurant_id }}">New Rating</a>
+      {% endif %}
+      <br>
+      <br>
+      <img id="restaurant-pic" src={{ rest_info['image_url'] }} class="img-rounded" width="200px" height="150px">
+    </div>
+<hr>
+    
     <div id="map" class="col-md-4"></div>
-      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATx-dTNuzvPtdyA7R0YmOYH5gD498D4Vs&callback=initMap"
-      async defer></script>
-
-      <!---Map CSS-->
-        <style>
-          #map {
-            height: 300px;
-          }
-          
-          #restaurant-pic{
-            width:200px;
-            height:200px;
-          }
-        </style>
-
-
-      <!---Google Map API-->
-      <script>
-
-        var userLatlng = {
-          lat: {{ rest_info['coordinates']['latitude'] }},
-          lng: {{ rest_info['coordinates']['longitude'] }}
-        };
-
-        var map;
-
-        function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-              center: {lat: userLatlng.lat, lng: userLatlng.lng},
-              zoom: 12
-          });
-            var marker = new google.maps.Marker({
-              position: userLatlng,
-              icon: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_local_restaurant_48px-32.png',
-              map: map
-            });
-
-            var contentString = '<div><h3>{{ rest_info['name'] }}</h3></div>' + 
-           '<div>{{ rest_info['location']['address1'] }}<br>' + 
-           '{{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }}</div>'
-           + '<b><a>Direction</a></b>'
-            ;
-
-            var infowindow = new google.maps.InfoWindow({
-            content: contentString
-        });
-
-          marker.addListener('click', function() {
-          infowindow.open(map, marker);
-        });
-      }
-
-      </script>
+    <div id="floating-panel" class="col-md-4">
+    <b>Mode of Travel: </b>
+    <select id="mode">
+      <option value="DRIVING">Driving</option>
+      <option value="WALKING">Walking</option>
+      <option value="BICYCLING">Bicycling</option>
+      <option value="TRANSIT">Transit</option>
+    </select>
     </div>
   </div>
+</div>
+  
+
+
+  <!---Google Map CSS-->
+    <style>
+      #map {
+        height: 300px;
+      }
+      
+      #restaurant-pic{
+        width:200px;
+        height:200px;
+      }
+
+      #floating-panel {
+        position: absolute;
+        top: 5px;
+        left: 60%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 2px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+  }
+    </style>
+
+    <!---Google Map API-->
+    <script>
+
+      var restLatlng = {
+                        lat: {{ rest_info['coordinates']['latitude'] }},
+                        lng: {{ rest_info['coordinates']['longitude'] }}
+      };
+
+      var contentString = '<div><h3>{{ rest_info['name'] }}</h3></div>' + 
+                         '<div>{{ rest_info['location']['address1'] }}<br>' + 
+                         '{{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }}</div>'
+                         + '<b><a>Direction</a></b>'
+      ;
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATx-dTNuzvPtdyA7R0YmOYH5gD498D4Vs"
+      async defer></script>
+
   <br>
   <br>
   <div class="row">
     <div class="col-md-12">
        <b>Comments from Users:</b>
         {% for comment in comments %}
-        <br><b><a href="/profile/{{ comment.user.user_id }}">{{ comment.user.username }}</a></b> - "{{ comment.comment }}"
+        <br><b><a href="/profile/{{ comment.user.user_id }}">{{ comment.user.username }}</a></b> - {{ comment.comment }}
         {% if comment.num_like_calculator() %}
           <span>{{ comment.num_like_calculator() }}</span>
         {% endif %}

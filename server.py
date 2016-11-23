@@ -332,8 +332,6 @@ def lookup_restaurant():
 
     if "current_user" in session:
         text = request.form['name']
-        # lat = request.form.get('lat')
-        # lng = request.form.get('lng')
         params = {'term': text,
                   'location': 'San Francisco, CA'
                   }

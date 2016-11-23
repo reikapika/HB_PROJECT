@@ -1,11 +1,24 @@
-<style>
-  #map {
-    height: 300px;
-  }
-  html, body {
-    height: 100%; 
-    margin: 30px; 
 
+#map {
+        height: 300px;
+      }
+      
+      #restaurant-pic{
+        width:200px;
+        height:200px;
+      }
+
+      #floating-panel {
+        position: absolute;
+        top: 5px;
+        left: 60%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 2px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
   }
 
-</style>

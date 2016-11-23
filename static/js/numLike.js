@@ -12,6 +12,7 @@ $(function () {
     console.log(result);
     console.log(result.status);
     if (result.status === "ok") {
+      $('#fake-flash').css('display', 'inblock');
       $('#fake-flash').html('I"m loving it!!');
       $('#like').html('Unlike');
       $('#num_likes').html(result.num_likes);

@@ -32,7 +32,7 @@
         <div class="modal-body" style="border:1px solid black;">
           <div class="col-xs-12">
             <div class="col-xs-5">
-              <img id="img1" src="static/img/randomtaichi.jpeg" height="150px" width="150px">
+              <img id="img1" src="static/img/randomtaichi.jpeg" class="img-rounded" height="150px" width="150px">
             </div>
             <div class="col-xs-7">
               Name: <b><p id="restaurant"></p></b>
@@ -64,7 +64,7 @@
         {% for restaurant in exist_restaurants %}
           <div class="col-md-4" id="fixed-div">
           <a href="/search_restaurant/{{ restaurant.restaurant_id }}"><br>
-            <img src="{{ restaurant.image }}" height="150px" width="200px">
+            <img src="{{ restaurant.image }}" class="img-rounded" height="150px" width="200px">
             <br>{{ restaurant.name }}<br>
           </a>
           </div>
@@ -89,7 +89,6 @@
     <br>
   </div>
   {% endif %}
-  
 
       
 {% endblock %}

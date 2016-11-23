@@ -38,7 +38,7 @@
     <!-- Wrapper for slides -->
     <div class="carousel-inner" role="listbox">
       <div class="item active">
-        <img src="static/img/picforcarousel.jpg" alt="Japanese" height="200px" width="300px">
+        <img src="static/img/picforcarousel.jpg" class="img-rounded" alt="Japanese" height="200px" width="300px">
         <div class="carousel-caption">
           <h3>Foodie Critic!</h3>
         </div>
@@ -46,7 +46,7 @@
  
   {% for cuisine, restaurant in restaurants.items() %}
       <div class="item">
-        <img src={{ restaurant.image }} alt={{ restaurant.name }} height="200px" width="300px">
+        <img src={{ restaurant.image }} alt={{ restaurant.name }} class="img-rounded" height="200px" width="300px">
         <div class="carousel-caption">
           <h3><a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a></h3>
           <p>{{ comments.comment }}</p>

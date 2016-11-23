@@ -7,20 +7,13 @@ $(function () {
 
       var name = $('#name').val();
 
-        // if (navigator.geolocation) {
-        //     navigator.geolocation.getCurrentPosition(function(position){
-        //     var pos = {lat: position.coords.latitude,
-        //          lng: position.coords.longitude,
-        //          name: name
-        //          };
-
       $.post("/check_restaurant.json", {'name': name}, checkRestaurantSuccess);
 
     });
 
 
     function checkRestaurantSuccess(result){
-      console.log(result);
+      console.log(result.status);
       
       if (result.status==='prohibited'){
           alert("Sorry, you don't have access to this. Please log in.");
@@ -40,10 +33,12 @@ $(function () {
             document.getElementById('cuisine').value = restaurant.categories[0].title;
 
           } else if (result.status==='Not Found'){
-              $('.modal-content').html('Please enter a valid restaurant name.');
+              $('.modal-title').text('Oops.');
+              $('.modal-body').html('Please enter an Asian restaurant and try again.');
      
           } else{
-              $('.modal-content').html('Please enter an Asian restaurant and try again.');
+              $('.modal-title').text('Oops.');
+              $('.modal-body').html('Please enter an Asian restaurant and try again.');
           }
       }
   }
@@ -70,8 +65,11 @@ $(function () {
         console.log(result);
         if (result.status === 'success'){
           $('#myModal').modal('hide');
+          $('.flashes').html('You have successfully added this restaurant!');
         } else{
-          $('.modal-content').html('This restaurant is already our list.');
+          $('.modal-title').text('Oops.');
+          $('.modal-content').removeClass('.modal-footer');
+          $('.modal-body').html('This restaurant is already our list.');
         }
         
     }
