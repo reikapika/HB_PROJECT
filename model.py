@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from datetime import datetime
 
 db = SQLAlchemy()
@@ -145,13 +146,69 @@ class Popularity(db.Model):
 
 ###################################################
 #Helper functions
+def load_fake_data():
+    #load cuisine
+    CUISINE = ['Japanese', 'Chinese', 'Korean', 'Indian', 'Vietnamese', 'Thai', 'Middle Eastern']
 
-def connect_to_db(app):
-    """Connect the database to our Flask app."""
+    for type in CUISINE:
+        cuisine = Cuisine(type=type)
 
-    # Configure to use our PostgreSQL database
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///pocketasia"
-    # app.config['SQLALCHEMY_ECHO'] = True
+        db.session.add(cuisine)
+    db.session.commit()
+
+    for i in range(7):
+        name = "Mr. Holmes #" + str(i)
+        yelp_id = i + 3
+        latitude = 20 + i
+        longitude = -122 + i
+        yelp_rating = 2 + i
+        cuisine_id = i + 1
+        restaurant_id = 1 + i
+        restaurant = Restaurant(restaurant_id=restaurant_id,
+                                name=name,
+                                yelp_id=yelp_id,
+                                yelp_rating=yelp_rating,
+                                latitude=latitude,
+                                longitude=longitude,
+                                cuisine_id=cuisine_id,
+                                )
+
+        db.session.add(restaurant)
+    db.session.commit()
+
+    usernames = ["jhacks", "cbob", "ksmith", "awalker",
+                 "jsmith", "acooper", "tshawn", "bdraco", "sgregor", "lkim"]
+    passwords = 123
+    fnames = ["Jane", "Chris", "Kay", "Allen", "John",
+              "Alex", "Thomas", "Bob", "Sydney", "Lyn"]
+    lnames = ["Hacks", "Bob", "Smith", "Walker", "Smith",
+              "Cooper", "Shawn", "Draco", "Gregor", "Kim"]
+    cuisine = ["Japanese", "Chinese", "Korean", "Indian", "Vietnamese",
+               "Middle Eastern", "Japanese", "Indian", "Korean", "Chinese"]
+    membership = datetime.utcnow()
+    last_login = datetime.utcnow()
+    for i in range(10):
+        user = User(username=usernames[i],
+                    password=passwords,
+                    fname=fnames[i],
+                    lname=lnames[i],
+                    fav_cuisine=cuisine[i],
+                    membership=membership,
+                    last_login=last_login
+                    )
+
+        db.session.add(user)
+    db.session.commit()
+
+    comment1 = Comment(user_id=1,
+                       restaurant_id=1,
+                       comment="this restaurant is great!!!!")
+    db.session.add(comment1)
+    db.session.commit()
+
+
+def connect_to_db(app, db_uri="postgresql:///pocketasia"):
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     db.app = app
     db.init_app(app)
 

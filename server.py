@@ -6,7 +6,6 @@ from model import connect_to_db, db, User, Cuisine, Rating, Restaurant, Comment,
 from datetime import datetime
 import os
 from random import choice
-import pprint
 
 
 CUISINE = ['Japanese', 'Chinese', 'Korean', 'Indian', 'Vietnamese', 'Thai', 'Middle Eastern']
@@ -14,6 +13,7 @@ CUISINE = ['Japanese', 'Chinese', 'Korean', 'Indian', 'Vietnamese', 'Thai', 'Mid
 
 #Settting up the back end routes.
 app = Flask(__name__)
+
 app.secret_key = "ABC"
 app.jinja_env.undefined = StrictUndefined
 
@@ -53,7 +53,7 @@ def login_user():
     if request.method == 'POST':
         username = request.form["username"]
         password = request.form["password"]
-        user = User.query.filter_by(username=username).first()
+        user = get_user_by_username(username)
         if not user:
             flash("User does not exist.")
             return redirect("/")
@@ -85,7 +85,7 @@ def register_users():
         membership = datetime.utcnow()
         last_login = datetime.utcnow()
 
-        exist_user = User.query.filter_by(username=username).first()
+        exist_user = get_user_by_username(username)
         if exist_user is None:
             new_user = User(username=username,
                             password=password,
@@ -161,9 +161,6 @@ def list_favorite(user_id):
 def remove_from_favlist(restaurant_id):
     """Removing the restaurant from user's favorite list."""
 
-    print "*" * 20, "remove_favor"
-
-
     if "current_user" in session:
 
         bookmark = Bookmark.query.filter_by(restaurant_id=restaurant_id).first()
@@ -181,7 +178,7 @@ def display_profile(user_id):
     """Display profile page for logged in users."""
 
     if "current_user" in session:
-        user = User.query.filter_by(user_id=user_id).first()
+        user = get_user_by_user_id(user_id)
         last_login = user.last_login.strftime("%B %d, %Y %M:%S %P")
         membership = user.membership.strftime("%B %d, %Y")
         return render_template("profile.html",
@@ -204,7 +201,6 @@ def do_search():
                            exist_restaurants=exist_restaurants)
 
 
-@staticmethod
 @app.route("/search_restaurant/<restaurant_id>", methods=['GET'])
 def call_yelp(restaurant_id):
     """Make an api call for selected restaurant."""
@@ -312,12 +308,11 @@ def display_restaurant():
                            results=results)
 
 
-@staticmethod
 @app.route("/lookup_cuisine")
 def get_restaurant_by_cuisine():
     """List restaurant of user's favorite cuisine."""
 
-    user = User.query.filter_by(user_id=session['current_user']).first()
+    user = get_user_by_user_id(session['current_user'])
     cuisine = Cuisine.query.filter_by(type=user.fav_cuisine).first()
     lookup = Restaurant.query.filter_by(cuisine_id=cuisine.cuisine_id).all()
     cuisine = user.fav_cuisine
@@ -441,12 +436,6 @@ def increment_numlike():
         return redirect("/homepage")
 
 
-# with app.test_request_context():
-#     print url_for('index')
-#     print url_for('login')
-#     # print url_for('login', next='/')
-#     # print url_for('profile', username='John Doe')
-
 ###############################################################################
 #Helper functions
 
@@ -463,8 +452,30 @@ def get_comments_by_restaurant(restaurant_id):
 
     query = Restaurant.query.filter_by(restaurant_id=restaurant_id).first()
     lst_of_comments = query.restaurant
-    result = choice(lst_of_comments)
+    try:
+        result = choice(lst_of_comments)
+    except IndexError:
+        result = Comment(user_id=2,
+                         restaurant_id=restaurant_id,
+                         comment="This restaurant is wonderful!!")
+
     return result
+
+
+def get_user_by_user_id(user_id):
+    """Get an user object by user_id."""
+
+    query = User.query.filter_by(user_id=user_id).first()
+
+    return query
+
+
+def get_user_by_username(username):
+    """Get an user object by username."""
+
+    query = User.query.filter_by(username=username).first()
+
+    return query
 
 
 if __name__ == "__main__":
