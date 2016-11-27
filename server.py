@@ -194,8 +194,8 @@ def do_search():
     """This allows users to search restaurant and lead them to the restaurant_info page."""
 
     user_input = request.form["search-form"]
-    exist_usernames = User.query.filter(User.username.like('%' + user_input + '%')).all()
-    exist_restaurants = Restaurant.query.filter(Restaurant.name.like('%' + user_input + '%')).all()
+    exist_usernames = User.query.filter(User.username.like('%'+user_input+'%')).all()
+    exist_restaurants = db.session.query(Restaurant).filter(Restaurant.name.like('%'+user_input+'%')).all()
     return render_template("search_result.html",
                            exist_usernames=exist_usernames,
                            exist_restaurants=exist_restaurants)
@@ -214,14 +214,23 @@ def call_yelp(restaurant_id):
     rest_info = resp.json()
     comments = Comment.query.filter_by(restaurant_id=restaurant_id).all()
     num_likes = exist_rest.num_like_calculator()
-    target = db.session.query(Popularity).filter_by(user_id=session['current_user'], restaurant_id=restaurant_id).first()
+    try:
+        target = db.session.query(Popularity).filter_by(user_id=session['current_user'], restaurant_id=restaurant_id).first()
 
-    return render_template("restaurant_info.html",
-                           rest_info=rest_info,
-                           num_likes=num_likes,
-                           exist_rest=exist_rest,
-                           comments=comments,
-                           target=target)
+        return render_template("restaurant_info.html",
+                               rest_info=rest_info,
+                               num_likes=num_likes,
+                               exist_rest=exist_rest,
+                               comments=comments,
+                               target=target)
+    except KeyError:
+        target = db.session.query(Popularity).filter_by(restaurant_id=restaurant_id).first()
+        return render_template("restaurant_info.html",
+                               rest_info=rest_info,
+                               num_likes=num_likes,
+                               exist_rest=exist_rest,
+                               comments=comments,
+                               target=target)
 
 
 @app.route("/ratings/<restaurant_id>", methods=['GET'])
@@ -236,21 +245,25 @@ def make_rating(restaurant_id):
 def post_rating(restaurant_id):
     """Post user's rating by adding to the database."""
 
-    cleanliness = request.form["rating1"]
-    quality = request.form["rating2"]
-    atmosphere = request.form["rating3"]
-    consistency = request.form["rating4"]
-    new_ratings = Rating(user_id=session["current_user"],
-                         restaurant_id=restaurant_id,
-                         cleanliness=cleanliness,
-                         quality=quality,
-                         atmosphere=atmosphere,
-                         consistency=consistency,
-                         )
-    db.session.add(new_ratings)
-    db.session.commit()
-    flash("Your ratings have been added!")
-    return redirect("/search_restaurant/%s" % restaurant_id)
+    if "current_user" in session:
+        cleanliness = request.form["rating1"]
+        quality = request.form["rating2"]
+        atmosphere = request.form["rating3"]
+        consistency = request.form["rating4"]
+        new_ratings = Rating(user_id=session["current_user"],
+                             restaurant_id=restaurant_id,
+                             cleanliness=cleanliness,
+                             quality=quality,
+                             atmosphere=atmosphere,
+                             consistency=consistency,
+                             )
+        db.session.add(new_ratings)
+        db.session.commit()
+        flash("Your ratings have been added!")
+        return redirect("/search_restaurant/%s" % restaurant_id)
+
+    else:
+        return render_template("make_ratings.html", restaurant_id=restaurant_id)
 
 
 @app.route("/comments/<restaurant_id>", methods=['GET'])

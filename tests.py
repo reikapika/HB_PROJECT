@@ -73,6 +73,7 @@ class IntegrationTest(TestCase):
     def test_homepage(self):
 
         result = self.client.get("/")
+
         self.assertIn('<option value="Japanese">Japanese</option>', result.data)
 
     def test_register(self):
@@ -89,7 +90,34 @@ class IntegrationTest(TestCase):
         db.session.commit()
 
         result = self.client.get("/register", new_user, follow_redirects=True)
+
         self.assertIsNotNone("Welcome, Jimmy!", result.data)
+
+    def test_search_form(self):
+
+        result = self.client.post('/search', data={'search-form': 'ac'}, follow_redirects=True)
+
+        self.assertIn("Let's look it up!", result.data)
+
+    def test_rating_page(self):
+
+        restaurant_id = 1
+        result = self.client.get('/ratings/%s' % restaurant_id, follow_redirects=True)
+
+        self.assertIn("<h2>How do you think about this restaurant?</h2>", result.data)
+
+    def test_comment_page(self):
+
+        restaurant_id = 1
+        result = self.client.get('/comments/%s' % restaurant_id, follow_redirects=True)
+
+        self.assertIn("<h2>What do you think about this restaurant?</h2>", result.data)
+
+    def test_restaurant_list(self):
+
+        result = self.client.post('/restaurant_list', data={'cuisine-type': 'Japanese'}, follow_redirects=True)
+
+        self.assertIn("List of", result.data)
 
 
 class FlaskTestsSessionLoggedIn(TestCase):
@@ -111,7 +139,74 @@ class FlaskTestsSessionLoggedIn(TestCase):
 
         if session:
             result = self.client.get("/profile/%s" % sess['user_id'])
+
             self.assertIn("<h1>User Profile</h1>", result.data)
+
+    def test_add_favorite(self):
+
+        if session:
+            new_favorite = Bookmark(user_id=sess['user_id'],
+                                    restaurant_id=1)
+            db.session.add(new_favorite)
+            db.session.commit()
+            result = self.client.get('search_restaurant/1')
+
+            self.assertEqual("successfully added to My Favorites", result.data)
+
+    def test_remove_favorite(self):
+
+        if session:
+            query = Bookmark.query.filter_by(user_id=sess['user_id'], restaurant_id=1).first()
+            db.session.delete(query)
+            db.session.commit()
+
+            self.assertIsNone(query)
+
+    def test_yelp_call(self):
+
+        if session:
+            restaurant_id = 1
+            result = self.client.get('/search_restaurant/%s' % restaurant_id, follow_redirects=True)
+
+            self.assertIn("<b>Restaurant Information</b>", result.data)
+
+    def test_lookup_cuisine(self):
+
+        if session:
+            result = self.client.get('/lookup_cuisine')
+
+            self.assertIn("<h2>Restaurants Marked as Favorites</h2>", result.data)
+
+    def test_add_restaurant(self):
+
+        if session:
+            self.client.post('/add_restaurant.json',
+                             data={'name': 'Ichido'},
+                             follow_redirects=True)
+
+            query = Restaurant.query.filter_by(name='Ichido').first()
+
+            self.assertIsNotNone(query)
+
+    def test_check_restaurant(self):
+
+        if session:
+            result = self.client.post('/check_restaurant.json',
+                                      data={'name': 'Yume Sushi'},
+                                      follow_redirects=True)
+            self.assertIs(result, object)
+
+    def test_like_rest(self):
+
+        if session:
+            result = self.client.post('/like_rest.json',
+                                      data={'restaurant_id': 1},
+                                      follow_redirects=True)
+            query = Popularity.query.filter_by(restaurant_id=1).first()
+            if query:
+                self.assertIn("unliked", result.data)
+            else:
+                self.assertIn("ok", result.data)
 
 
 class FlaskTestsSessionLoggedOut(TestCase):
@@ -127,6 +222,7 @@ class FlaskTestsSessionLoggedOut(TestCase):
         """Test that user can't see profile page when logged out."""
 
         result = self.client.get("/profile/<user_id>", follow_redirects=True)
+
         self.assertNotIn("<h2>Account Details</h2>", result.data)
         self.assertIn("<h1>Please log in.</h1>", result.data)
 

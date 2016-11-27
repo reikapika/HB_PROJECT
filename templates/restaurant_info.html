@@ -6,11 +6,11 @@
   <div class="col-md-12">
     <div class="col-md-3">
       <b>Restaurant Information</b><br>
-      <h2>{{ rest_info['name'] }}</h2>
+      <h2>{{ rest_info.name }}</h2>
       Likes: <span id="num_likes">{{ num_likes }}</span><br>
       Category: {{ rest_info['categories'][0]['title'] }}<br>
-      Phone: {{ rest_info['phone'] }}<br>
-      Price Level: {{ rest_info['price'] }}<br>
+      Phone: {{ rest_info.phone }}<br>
+      Price Level: {{ rest_info.price }}<br>
       Hours: 
         {{ rest_info['hours'][0]['open'][0]['start']}} 
         - {{ rest_info['hours'][0]['open'][0]['end']}}<br>
