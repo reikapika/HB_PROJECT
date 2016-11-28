@@ -99,8 +99,10 @@ hr {
 }
 
 .img-responsive{
-    width: 235px;
+    width: 100%;
+
 }
+
 .img-border {
     float: none;
     margin: 0 auto 0;
@@ -113,12 +115,15 @@ hr {
 }
 
 
-.no-padding {
-  padding: 0;
-}
 
 section {
-    padding:100px 0;
+  padding: 100px 0;
+}
+aside {
+  padding: 50px 0;
+}
+.no-padding {
+  padding: 0;
 }
 
 footer {
@@ -167,8 +172,8 @@ footer p {
 }
 .portfolio-box .portfolio-box-caption .portfolio-box-caption-content .project-category,
 .portfolio-box .portfolio-box-caption .portfolio-box-caption-content .project-name {
-  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
-  padding: 0 15px;
+  font-family: 'Josefin Slab', 'Helvetica Neue', Arial, sans-serif;
+  padding: 0;
 }
 .portfolio-box .portfolio-box-caption .portfolio-box-caption-content .project-category {
   text-transform: uppercase;

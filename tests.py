@@ -49,6 +49,18 @@ class FlaskTestBasic(TestCase):
 
         self.assertIsNotNone(get_user_by_username("jhacks"))
 
+    def test_homepage(self):
+
+        result = self.client.get("/")
+
+        self.assertIn('Welcome to', result.data)
+
+    def test_login(self):
+
+        result = self.client.get("/login")
+
+        self.assertIn('Not a user yet?', result.data)
+
 
 class IntegrationTest(TestCase):
     def setUp(self):
@@ -64,12 +76,6 @@ class IntegrationTest(TestCase):
 
         db.session.close()
         db.drop_all()
-
-    def test_homepage(self):
-
-        result = self.client.get("/")
-
-        self.assertIn('<option value="Japanese">Japanese</option>', result.data)
 
     def test_register(self):
 
@@ -99,20 +105,21 @@ class IntegrationTest(TestCase):
         restaurant_id = 1
         result = self.client.get('/ratings/%s' % restaurant_id, follow_redirects=True)
 
-        self.assertIn("<h2>How do you think about this restaurant?</h2>", result.data)
+        self.assertIn("<strong>How do you think about this restaurant?</strong>", result.data)
 
     def test_comment_page(self):
 
         restaurant_id = 1
         result = self.client.get('/comments/%s' % restaurant_id, follow_redirects=True)
 
-        self.assertIn("<h2>What do you think about this restaurant?</h2>", result.data)
+        self.assertIn("<strong>What do you think about this restaurant?</strong>", result.data)
 
     def test_restaurant_list(self):
 
-        result = self.client.post('/restaurant_list', data={'cuisine-type': 'Japanese'}, follow_redirects=True)
+        cuisine = 'Korean'
+        result = self.client.get('/restaurant_list/%s' % cuisine, follow_redirects=True)
 
-        self.assertIn("List of", result.data)
+        self.assertIn("<strong>List of", result.data)
 
 
 class FlaskTestsSessionLoggedIn(TestCase):
@@ -135,7 +142,7 @@ class FlaskTestsSessionLoggedIn(TestCase):
         if session:
             result = self.client.get("/profile/%s" % sess['user_id'])
 
-            self.assertIn("<h1>User Profile</h1>", result.data)
+            self.assertIn("Last Login:", result.data)
 
     def test_add_favorite(self):
 
@@ -170,7 +177,7 @@ class FlaskTestsSessionLoggedIn(TestCase):
         if session:
             result = self.client.get('/lookup_cuisine')
 
-            self.assertIn("<h2>Restaurants Marked as Favorites</h2>", result.data)
+            self.assertIn("<strong>Restaurants Marked as Favorites</strong>", result.data)
 
     def test_add_restaurant(self):
 
@@ -216,10 +223,10 @@ class FlaskTestsSessionLoggedOut(TestCase):
     def test_profile_page(self):
         """Test that user can't see profile page when logged out."""
 
-        result = self.client.get("/profile/<user_id>", follow_redirects=True)
+        result = self.client.get("/profile/2", follow_redirects=True)
 
-        self.assertNotIn("<h2>Account Details</h2>", result.data)
-        self.assertIn("<h1>Please log in.</h1>", result.data)
+        self.assertNotIn("<strong>Account Details</strong>", result.data)
+        self.assertIn("<strong>Please Log In</strong>", result.data)
 
 
 if __name__ == "__main__":

@@ -28,7 +28,11 @@
                             <div class="carousel-caption">
                                 <h3><a href="/search_restaurant/{{ restaurants[0].restaurant_id }}">{{ restaurants[0].name }}</a></h3>
                                 <div class="transbox">
+                                    {% if restaurants[0].restaurant[0] %}
                                     <p>{{ restaurants[0].restaurant[0].comment }}</p>
+                                    {% else %}
+                                    <h5>Click here to give the first comment.</h5>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -37,7 +41,11 @@
                             <div class="carousel-caption">
                                 <h3><a href="/search_restaurant/{{ restaurants[1].restaurant_id }}">{{ restaurants[1].name }}</a></h3>
                                 <div class="transbox">
+                                    {% if restaurants[1].restaurant[0] %}
                                     <p>{{ restaurants[1].restaurant[0].comment }}</p>
+                                    {% else %}
+                                    <h5>Click here to give the first comment.</h5>
+                                    {% endif %}
                                 </div>
                           </div>
                         </div>
@@ -46,7 +54,11 @@
                             <div class="carousel-caption">
                                 <h3><a href="/search_restaurant/{{ restaurants[2].restaurant_id }}">{{ restaurants[2].name }}</a></h3>
                                 <div class="transbox">
+                                    {% if restaurants[2].restaurant[0] %}
                                     <p>{{ restaurants[2].restaurant[0].comment }}</p>
+                                    {% else %}
+                                    <h5>Click here to give the first comment.</h5>
+                                    {% endif %}
                                 </div>
                           </div>
                         </div>
@@ -55,7 +67,11 @@
                             <div class="carousel-caption">
                                 <h3><a href="/search_restaurant/{{ restaurants[3].restaurant_id }}">{{ restaurants[3].name }}</a></h3>
                                 <div class="transbox">
+                                    {% if restaurants[3].restaurant[0] %}
                                     <p>{{ restaurants[3].restaurant[0].comment }}</p>
+                                    {% else %}
+                                    <h5>Click here to give the first comment.</h5>
+                                    {% endif %}
                                 </div>
                           </div>
                         </div>
@@ -91,7 +107,7 @@
                     <strong>when you craves for exotic flavors</strong>
                 </h2>
                 <hr>
-                <img class="img-responsive img-border img-left" src="/static/img/friedrice.jpg" alt="" height="285px" width="225px">
+                <img class="img-border img-left" src="/static/img/friedrice.jpg" alt="" height="165px" width="225px">
                 <p>San Franasia is a web app for enthusiastic foodies to share their tasting experience and discover some must-go restaurants. To join us, simply register and start your cuisine crush here. As a registered user, you are granted for many features in this app. You may search and view most updated restaurant information. You can get accurate route details from your current location to the place of your choice on a map. Our rating and comment features welcome every user to view and edit. More features regarding connecting with friends and initializing tasting meetups are <strong>coming soon</strong>.</p>
                 <p></p>
             </div>
@@ -101,15 +117,14 @@
         <div class="row">
             <div class="box">
                 <div class="col-lg-12">
-                    <section class="no-padding" id="portfolio">
-                        <div class="container-fluid">
-                            <hr>
-                            <h2 class="intro-text text-center">
-                                <strong>Explore These Exotic Flavors</strong>
-                            </h2>
-                            <hr>
+                    <hr>
+                    <h2 class="intro-text text-center">
+                        <strong>Explore These Exotic Flavors</strong>
+                    </h2>
+                    <hr>
+                        <section class="no-padding" id="portfolio">
                             <div class="row no-gutter popup-gallery">
-                                <div class="col-lg-3 col-sm-6">
+                                <div class="col-lg-3 col-sm-4" style="height: 195px">
                                     <a href="/restaurant_list/Korean" class="portfolio-box">
                                         <img src="/static/img/kr.jpg" class="img-responsive" alt="Korean">
                                         <div class="portfolio-box-caption">
@@ -121,7 +136,7 @@
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-lg-3 col-sm-6">
+                                <div class="col-lg-3 col-sm-4" style="height: 195px">
                                     <a href="/restaurant_list/Chinese" class="portfolio-box">
                                         <img src="/static/img/cn.jpg" class="img-responsive" alt="Chinese">
                                         <div class="portfolio-box-caption">
@@ -133,7 +148,7 @@
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-lg-3 col-sm-6">
+                                <div class="col-lg-3 col-sm-4" style="height: 195px">
                                     <a href="/restaurant_list/Middle Eastern" class="portfolio-box">
                                         <img src="/static/img/middle.jpg" class="img-responsive" alt="Middle Eastern">
                                         <div class="portfolio-box-caption">
@@ -145,7 +160,7 @@
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-lg-3 col-sm-6">
+                                <div class="col-lg-3 col-sm-4" style="height: 195px">
                                     <a href="/restaurant_list/Japanese" class="portfolio-box">
                                         <img src="/static/img/jp.jpg" class="img-responsive" alt="Japanese">
                                         <div class="portfolio-box-caption">
@@ -157,7 +172,7 @@
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-lg-3 col-sm-6">
+                                <div class="col-lg-3 col-sm-4" style="height: 195px">
                                     <a href="/restaurant_list/Vietnamese" class="portfolio-box">
                                         <img src="/static/img/viet.jpg" class="img-responsive" alt="Vietnamese">
                                         <div class="portfolio-box-caption">
@@ -169,7 +184,7 @@
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-lg-3 col-sm-6">
+                                <div class="col-lg-3 col-sm-4" style="height: 195px">
                                     <a href="/restaurant_list/Indian" class="portfolio-box">
                                         <img src="/static/img/indian.jpg" class="img-responsive" alt="Indian">
                                         <div class="portfolio-box-caption">
@@ -181,7 +196,7 @@
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-lg-3 col-sm-6">
+                                <div class="col-lg-3 col-sm-4" style="height: 195px">
                                     <a href="/restaurant_list/Thai" class="portfolio-box">
                                         <img src="/static/img/thai.jpg" class="img-responsive" alt="Thai">
                                         <div class="portfolio-box-caption">
@@ -193,7 +208,7 @@
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-lg-3 col-sm-6">
+                                <div class="col-lg-3 col-sm-4" style="height: 195px">
                                     <a href="/" class="portfolio-box">
                                         <img src="/static/img/seventh.jpg" class="img-responsive" alt="">
                                         <div class="portfolio-box-caption">
@@ -206,23 +221,9 @@
                                     </a>
                                 </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
                 </div>
             </div>
         </div>
-    </div>
 </div>
 {% endblock %}
-
-<script>
-    $('.portfolio-box').on('click', function(evt){
-        evt.preventDefault();
-        var alt = $(this).attr('alt');
-        console.log(alt);
-        $.post('/restaurant_list', alt, postSuccess);
-    });
-    function postSuccess(result){
-        console.log(success);
-    }
-</script>
