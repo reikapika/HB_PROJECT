@@ -83,7 +83,7 @@
                 <h2 class="intro-text text-center">
                 <strong>Restaurants Which Match Your Search:</strong>
                 <hr>
-            {% for restaurant in exist_restaurants %}
+            {% for restaurant in exist_restaurants | sort(attribute="name") %}
                 <div class="col-md-4" id="fixed-div">
                     <a href="/search_restaurant/{{ restaurant.restaurant_id }}"><br>
                         <img src="{{ restaurant.image }}" class="img-rounded" height="200px" width="260px">

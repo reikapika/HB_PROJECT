@@ -65,7 +65,7 @@ $(function () {
         console.log(result);
         if (result.status === 'success'){
           $('#myModal').modal('hide');
-          $('.flashes').html('You have successfully added this restaurant!');
+          $('.flashes').innerHTML('You have successfully added this restaurant!');
         } else{
           $('.modal-title').text('Oops.');
           $('.modal-content').removeClass('.modal-footer');

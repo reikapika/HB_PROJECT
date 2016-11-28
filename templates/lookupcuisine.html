@@ -3,11 +3,13 @@
 <div class="container">
     <div class="row">
         <div class="box">
-            <h3>Your favorite {{ cuisine }} Restaurants!</h3>
-            <hr>
-            <div class="row">
-              <div class="col-md-12">
-                {% for restaurant in lookup %}
+            <div class="col-lg-12">
+                <hr>
+                <h2 class="intro-text text-center">
+                    <strong>Your favorite {{ cuisine }} Restaurants!</strong>
+                </h2>
+                <hr>
+                {% for restaurant in lookup | sort(attribute="name") %}
                 <div class="col-md-4">
                   <form action="/remove_favor/{{ restaurant.restaurant_id }}" method="POST">
                     <a href="/search_restaurant/{{ restaurant.restaurant_id }}">

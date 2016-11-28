@@ -1,34 +1,36 @@
 {% extends "new_base.html" %}
 
-{% block title %}
-<title>Register Form</title>
-{% endblock %}
-
 {% block content %}
 <div class="container">
-    <div class="row">
-        <div class="box">
-          <div class="col-lg-12 text-center">
-            <h2>Please fill out the following for registration.</h2>
-            <form action="/register" method="POST">
-              <p><label>Enter your first name: <input type="text" name="fname"></label></p>
-              <p><label>Enter your last name: <input type="text" name="lname"></label></p>
-              <p><label>Enter your username: <input type="text" name="username"></label></p>
-              <p><label> Enter your password: <input type="password" name="password"></label></p>
-              <!-- Confirm your password: <input type="password" name="password"> -->
-              What's your favorite cuisine type?
-              <select name="fav-cuisine">
-                <option value="Japanese">Japanese</option>
-                <option value="Chinese">Chinese</option>
-                <option value="Korean">Korean</option>
-                <option value="Vietnamese">Vietnamese</option>
-                <option value="Thai">Thai</option>
-                <option value="Middle Eastern">Middle Eastern</option>
-                <option value="Indian">Indian</option>
-              </select>
-              <input type="submit" value="Register!">
-            </form>
-          </div>
+    <div class="container">
+        <div class="row">
+            <div class="box">
+                <div class="col-lg-12 text-center">
+                  <hr>
+                  <h2 class="intro-text text-center">
+                      <strong>Registration Form</strong>
+                  </h2>
+                  <hr>
+                  <form action="/register" method="POST">
+                    <p>Please enter your first name: <input type="text" name="fname"></p>
+                    <p>Please enter your last name: <input type="text" name="lname"></p>
+                    <p>Please enter your username: <input type="text" name="username"></p>
+                    <p>Please enter your password: <input type="password" name="password"></p>
+                    <!-- Confirm your password: <input type="password" name="password"> -->
+                    <p>What's your favorite cuisine type?
+                    <select name="fav-cuisine">
+                      <option value="Japanese">Japanese</option>
+                      <option value="Chinese">Chinese</option>
+                      <option value="Korean">Korean</option>
+                      <option value="Vietnamese">Vietnamese</option>
+                      <option value="Thai">Thai</option>
+                      <option value="Middle Eastern">Middle Eastern</option>
+                      <option value="Indian">Indian</option>
+                    </select></p>
+                    <input type="submit" value="Register!">
+                  </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

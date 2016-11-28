@@ -14,8 +14,8 @@ CUISINE = ['Japanese', 'Chinese', 'Korean', 'Indian', 'Vietnamese', 'Thai', 'Mid
 #Settting up the back end routes.
 app = Flask(__name__)
 
-app.secret_key = "ABC"
-app.jinja_env.undefined = StrictUndefined
+app.secret_key = "key"
+app.jinja_env.undeined = StrictUndefined
 
 
 APP_ID = os.environ['YELP_CONSUMER_KEY']
@@ -48,6 +48,7 @@ def login_user():
         username = request.form["username"]
         password = request.form["password"]
         user = get_user_by_username(username)
+
         if not user:
             flash("User does not exist.")
             return redirect("/")
@@ -135,36 +136,24 @@ def add_to_favorite():
 def list_favorite(user_id):
     """Listing users' favorite restaurants that they saved before."""
 
-    if "current_user" in session:
+    bookmarks = Bookmark.query.filter_by(user_id=user_id).all()
+    restaurants = []
+    for bookmark in bookmarks:
+        restaurant_id = bookmark.restaurant_id
+        rest_obj = Restaurant.query.filter_by(restaurant_id=restaurant_id).first()
+        restaurants.append(rest_obj)
 
-        bookmarks = Bookmark.query.filter_by(user_id=user_id).all()
-        restaurants = []
-        for bookmark in bookmarks:
-            restaurant_id = bookmark.restaurant_id
-            rest_obj = Restaurant.query.filter_by(restaurant_id=restaurant_id).first()
-            restaurants.append(rest_obj)
-
-        return render_template("my_favorite.html", restaurants=restaurants)
-
-    else:
-
-        return redirect("/")
+    return render_template("my_favorite.html", restaurants=restaurants)
 
 
 @app.route("/remove_favor/<restaurant_id>", methods=['POST'])
 def remove_from_favlist(restaurant_id):
     """Removing the restaurant from user's favorite list."""
 
-    if "current_user" in session:
-
-        bookmark = Bookmark.query.filter_by(restaurant_id=restaurant_id).first()
-        db.session.delete(bookmark)
-        db.session.commit()
-        return redirect("/list_favlist/%s" % session['current_user'])
-
-    else:
-
-        return render_template("login.html")
+    bookmark = Bookmark.query.filter_by(restaurant_id=restaurant_id).first()
+    db.session.delete(bookmark)
+    db.session.commit()
+    return redirect("/list_favlist/%s" % session['current_user'])
 
 
 @app.route("/profile/<user_id>")
@@ -290,7 +279,6 @@ def post_comments(restaurant_id):
 def remove_comment():
     """Remove a comment."""
 
-    print '************', request.form
     comment_id = request.form['id']
     query = Comment.query.filter_by(comment_id=comment_id).first()
     if query:
@@ -307,9 +295,9 @@ def display_restaurant(cuisine):
 
     selected_cuisine = Cuisine.query.filter_by(type=cuisine).first()
     results = selected_cuisine.restaurants
-    names = []
-    for i in results:
-        names.append(i.name)
+    # names = []
+    # for i in results:
+    #     names.append(i.name)
 
     return render_template("restaurant_list.html",
                            cuisine=cuisine,

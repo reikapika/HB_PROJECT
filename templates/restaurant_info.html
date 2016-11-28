@@ -52,13 +52,11 @@
                 {% if ratings %}
                 <div class="col-md-4">
                     <h3>Restaurant Ratings</h3>
-                    {% for rating in ratings %}
-                        <h4>Cleanliness: {{ rating.cleanliness }}</h4>
-                        <h4>Cleanliness: {{ rating.cleanliness }}</h4>
-                        <h4>Quality: {{ rating.quality }}</h4>
-                        <h4>Atmosphere: {{ rating.atmosphere }}</h4>
-                        <h4>Consistency: {{ rating.consistency }}</h4>
-                    {% endfor %}
+                        <h5>Cleanliness: {{ ratings[-1].cleanliness }}</h5>
+                        <h5>Cleanliness: {{ ratings[-1].cleanliness }}</h5>
+                        <h5>Quality: {{ ratings[-1].quality }}</h5>
+                        <h5>Atmosphere: {{ ratings[-1].atmosphere }}</h5>
+                        <h5>Consistency: {{ ratings[-1].consistency }}</h5>
                 </div>
                 {% endif %}
             </div>
