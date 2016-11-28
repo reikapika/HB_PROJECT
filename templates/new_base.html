@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>San Franasia - Feed Your Craving</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/static/css/base.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Slab:100,300,400,600,700,100italic,300italic,400italic,600italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- Theme CSS -->
+    <!-- <link href="css/creative.min.css" rel="stylesheet"> -->
+    <!-- <link rel="stylesheet" href="/static/css/base.css"> -->
+    <link rel="stylesheet" href="/static/css/map.css">
+
+
+</head>
+
+<body>
+
+    <div class="brand">San Franasia</div>
+    <div class="address-bar">Dedicated to Thrill Your Taste Bud</div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    <li>{% if "current_user" in session %}
+                        <a href="/profile/{{ session.user_id }}">My Account</a>
+                    </li>
+                    <li>
+                        <a href="/logout">
+                            <form action="/logout" method="POST">Logout</form>
+                        </a>
+                    </li>
+                    <li>{% else %}
+                        <a href="/login">Login</a>
+                    </li>{% endif %}
+                    <li><form action="/search" method="POST">
+                        <input type="text" name="search-form" class="form-control" placeholder="Search">
+                    </li>
+                    <li>
+                        <button type="submit" class="btn btn-default">Search for Restaurants or Users</button>
+                    </li></form>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+
+        <!--flash message-->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-info text-center">
+                    {% for message in messages %}
+                    <ul class=flashes>
+                        {{ message }}
+                    </ul>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+    </nav>
+    
+        
+{% block content %}    
+{% endblock %}
+
+  
+    <!-- /.container -->
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                   <p></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+   
+
+
+    <!-- Javascript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/favorite.js"></script>
+    <script type="text/javascript" src="/static/js/numLike.js"></script>
+    <script type="text/javascript" src="/static/js/map.js"></script>
+    <script type="text/javascript" src="/static/js/removeComment.js"></script>
+    <script type="text/javascript" src="/static/js/addRestaurant.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+    <!-- Script to Activate the Carousel -->
+    <script>
+    $('.carousel').carousel({
+        interval: 5000 //changes the speed
+    })
+    </script>
+</body>
+
+</html>

@@ -1,72 +1,228 @@
-{% extends "base.html" %}
+{% extends "new_base.html" %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-12">
+<div class="container">
+    <div class="row">
+        <div class="box">
+            <div class="col-lg-12 text-center">
+                <div id="myCarousel" class="carousel slide">
+                    <!-- Indicators -->
+                    <ol class="carousel-indicators">
+                        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                        <li data-target="#myCarousel" data-slide-to="1"></li>
+                        <li data-target="#myCarousel" data-slide-to="2"></li>
+                        <li data-target="#myCarousel" data-slide-to="3"></li>
+                        <li data-target="#myCarousel" data-slide-to="4"></li>
+                    </ol>
+
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img src="static/img/carouselstart.jpg" class="img-rounded" alt="Japanese">
+                                <div class="carousel-caption">
+                                    <h3>Foodie Critic!</h3>
+                                </div>
+                        </div>
+                        <div class="item">
+                            <img src="/static/img/1.jpg" alt={{ restaurants[0].name }} class="img-rounded">
+                            <div class="carousel-caption">
+                                <h3><a href="/search_restaurant/{{ restaurants[0].restaurant_id }}">{{ restaurants[0].name }}</a></h3>
+                                <div class="transbox">
+                                    <p>{{ restaurants[0].restaurant[1].comment }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="/static/img/2.jpg" alt={{ restaurants[1].name }} class="img-rounded">
+                            <div class="carousel-caption">
+                                <h3><a href="/search_restaurant/{{ restaurants[1].restaurant_id }}">{{ restaurants[1].name }}</a></h3>
+                                <div class="transbox">
+                                    <p>{{ restaurants[1].restaurant[1].comment }}</p>
+                                </div>
+                          </div>
+                        </div>
+                        <div class="item">
+                            <img src="/static/img/3.jpg" alt={{ restaurants[2].name }} class="img-rounded">
+                            <div class="carousel-caption">
+                                <h3><a href="/search_restaurant/{{ restaurants[2].restaurant_id }}">{{ restaurants[2].name }}</a></h3>
+                                <div class="transbox">
+                                    <p>{{ restaurants[2].restaurant[1].comment }}</p>
+                                </div>
+                          </div>
+                        </div>
+                        <div class="item">
+                            <img src="/static/img/4.jpg" alt={{ restaurants[3].name }} class="img-rounded">
+                            <div class="carousel-caption">
+                                <h3><a href="/search_restaurant/{{ restaurants[3].restaurant_id }}">{{ restaurants[3].name }}</a></h3>
+                                <div class="transbox">
+                                    <p>{{ restaurants[3].restaurant[1].comment }}</p>
+                                </div>
+                          </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                        <span class="icon-prev"></span>
+                    </a>
+                    <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                        <span class="icon-next"></span>
+                    </a>
+                </div>
+                <h2 class="brand-before">
+                    <small>Welcome to</small>
+                </h2>
+                <h1 class="brand-name">San Franasia</h1>
+                <hr class="tagline-divider">
+                <h2>
+                    <small>By
+                        <strong>Esther Tan</strong>
+                    </small>
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="box">
+            <div class="col-lg-12">
+                <hr>
+                <h2 class="intro-text text-center">This is the place to go
+                    <strong>when you craves for exotic flavors</strong>
+                </h2>
+                <hr>
+                <img class="img-responsive img-border img-left" src="/static/img/friedrice.jpg" alt="" height="285px" width="225px">
+                <p>San Franasia is a web app for enthusiastic foodies to share their tasting experience and discover some must-go restaurants. To join us, simply register and start your cuisine crush here. As a registered user, you are granted for many features in this app. You may search and view most updated restaurant information. You can get accurate route details from your current location to the place of your choice on a map. Our rating and comment features welcome every user to view and edit. More features regarding connecting with friends and initializing tasting meetups are <strong>coming soon</strong>.</p>
+                <p></p>
+            </div>
+        </div>
+    </div>
     
-    <form class="cuisine-form" action="/restaurant_list" method="POST">
-    Choose Your Cuisine of the Day!
-    <select name="cuisine-type" id="select-val">
-      <option value="Japanese">Japanese</option>
-      <option value="Chinese">Chinese</option>
-      <option value="Korean">Korean</option>
-      <option value="Indian">Indian</option>
-      <option value="Vietnamese">Vietnames</option>
-      <option value="Thai">Thai</option>
-      <option value="Middle Eastern">Middle Eastern</option>
-    </select>
-    <input type="submit" value="Check it out!">
-    </form>
-  </div>
-</div>
-<hr>
-
-<!-- Homepage Carousel -->
-<div class="row">
-  <div id="myCarousel" class="carousel slide" data-ride="carousel">
-    <!-- Indicators -->
-    <ol class="carousel-indicators">
-      <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-      <li data-target="#myCarousel" data-slide-to="1"></li>
-      <li data-target="#myCarousel" data-slide-to="2"></li>
-      <li data-target="#myCarousel" data-slide-to="3"></li>
-      <li data-target="#myCarousel" data-slide-to="4"></li>
-      <li data-target="#myCarousel" data-slide-to="5"></li>
-      <li data-target="#myCarousel" data-slide-to="6"></li>
-    </ol>
-
-    <!-- Wrapper for slides -->
-    <div class="carousel-inner" role="listbox">
-      <div class="item active">
-        <img src="static/img/picforcarousel.jpg" class="img-rounded" alt="Japanese" height="200px" width="300px">
-        <div class="carousel-caption">
-          <h3>Foodie Critic!</h3>
+        <div class="row">
+            <div class="box">
+                <div class="col-lg-12">
+                    <section class="no-padding" id="portfolio">
+                        <div class="container-fluid">
+                            <hr>
+                            <h2 class="intro-text text-center">
+                                <strong>Explore These Exotic Flavors</strong>
+                            </h2>
+                            <hr>
+                            <div class="row no-gutter popup-gallery">
+                                <div class="col-lg-3 col-sm-6">
+                                    <a href="/restaurant_list/Korean" class="portfolio-box">
+                                        <img src="/static/img/kr.jpg" class="img-responsive" alt="Korean">
+                                        <div class="portfolio-box-caption">
+                                            <div class="portfolio-box-caption-content">
+                                                <div class="project-category text-faded">
+                                                    Korean
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-3 col-sm-6">
+                                    <a href="/restaurant_list/Chinese" class="portfolio-box">
+                                        <img src="/static/img/cn.jpg" class="img-responsive" alt="Chinese">
+                                        <div class="portfolio-box-caption">
+                                            <div class="portfolio-box-caption-content">
+                                                <div class="project-category text-faded">
+                                                    Chinese
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-3 col-sm-6">
+                                    <a href="/restaurant_list/Middle Eastern" class="portfolio-box">
+                                        <img src="/static/img/middle.jpg" class="img-responsive" alt="Middle Eastern">
+                                        <div class="portfolio-box-caption">
+                                            <div class="portfolio-box-caption-content">
+                                                <div class="project-category text-faded">
+                                                    Middle Eastern
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-3 col-sm-6">
+                                    <a href="/restaurant_list/Japanese" class="portfolio-box">
+                                        <img src="/static/img/jp.jpg" class="img-responsive" alt="Japanese">
+                                        <div class="portfolio-box-caption">
+                                            <div class="portfolio-box-caption-content">
+                                                <div class="project-category text-faded">
+                                                    Japanese
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-3 col-sm-6">
+                                    <a href="/restaurant_list/Vietnamese" class="portfolio-box">
+                                        <img src="/static/img/viet.jpg" class="img-responsive" alt="Vietnamese">
+                                        <div class="portfolio-box-caption">
+                                            <div class="portfolio-box-caption-content">
+                                                <div class="project-category text-faded">
+                                                    Vietnamese
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-3 col-sm-6">
+                                    <a href="/restaurant_list/Indian" class="portfolio-box">
+                                        <img src="/static/img/indian.jpg" class="img-responsive" alt="Indian">
+                                        <div class="portfolio-box-caption">
+                                            <div class="portfolio-box-caption-content">
+                                                <div class="project-category text-faded">
+                                                    Indian
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-3 col-sm-6">
+                                    <a href="/restaurant_list/Thai" class="portfolio-box">
+                                        <img src="/static/img/thai.jpg" class="img-responsive" alt="Thai">
+                                        <div class="portfolio-box-caption">
+                                            <div class="portfolio-box-caption-content">
+                                                <div class="project-category text-faded">
+                                                    Thai
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-3 col-sm-6">
+                                    <a href="/" class="portfolio-box">
+                                        <img src="/static/img/seventh.jpg" class="img-responsive" alt="">
+                                        <div class="portfolio-box-caption">
+                                            <div class="portfolio-box-caption-content">
+                                                <div class="project-category text-faded">
+                                                    Coming Soon
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
         </div>
-      </div>
- 
-  {% for cuisine, restaurant in restaurants.items() %}
-      <div class="item">
-        <img src={{ restaurant.image }} alt={{ restaurant.name }} class="img-rounded" height="200px" width="300px">
-        <div class="carousel-caption">
-          <h3><a href="/search_restaurant/{{ restaurant.restaurant_id }}">{{ restaurant.name }}</a></h3>
-          <p>{{ comments.comment }}</p>
-        </div>
-      </div>
-  {% endfor %}
-  
+    </div>
 </div>
-
-    <!-- Left and right controls -->
-    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
-  </div>
-</div>
-</div>
-
 {% endblock %}
+
+<script>
+    $('.portfolio-box').on('click', function(evt){
+        evt.preventDefault();
+        var alt = $(this).attr('alt');
+        console.log(alt);
+        $.post('/restaurant_list', alt, postSuccess);
+    });
+    function postSuccess(result){
+        console.log(success);
+    }
+</script>

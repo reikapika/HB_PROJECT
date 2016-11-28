@@ -1,90 +1,112 @@
-{% extends "base.html" %}
+{% extends "new_base.html" %}
 
 {% block content %}
 <!--Add button for creating new restaurants.-->
-<div class="row">
-  <div class="col-md-12">
-    <div class="col-md-8">
-      <button class="btn btn-default collapsed" data-toggle="collapse" data-target="#new-rest">Can't Find What You Want?</button>
-        <div class="form-group">
-          <input type="text" id="name" class="form-control input-sm" placeholder="Restaurant Name">
-        </div>
+<div class="container">
+    <div class="row">
+        <div class="box">
+            <div class="col-lg-12">
+                <hr>
+                <h2 class="intro-text text-center">
+                    <strong>Can't Find What You Want?</strong>
+                </h2>
+                <hr>
+  
+                <div class="form-group">
+                  <input type="text" id="name" class="form-control input-sm" placeholder="Restaurant Name">
+                </div>
 
-        <input id="cuisine" type="hidden" value="" />
+                <input id="cuisine" type="hidden" value="" />
 
-        <!--Modal button-->
-        <div class="form-group">
-          <button type="button" class="btn btn-info btn-md" id="myBtn">Let's look it up!</button>
-        </div>
+                <!--Modal button-->
+                <div class="form-group">
+                  <button type="button" class="btn btn-info btn-md center" id="myBtn">Let's look it up!</button>
+                </div>
  
 
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Please confirm so we know you are not a robot.</h4>
-        </div>
-        <br>
-        <div class="modal-body" style="border:1px solid black;">
-          <div class="col-xs-12">
-            <div class="col-xs-5">
-              <img id="img1" src="static/img/randomtaichi.jpeg" class="img-rounded" height="150px" width="150px">
+      <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+        
+          <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Please confirm so we know you are not a robot.</h4>
+                </div>
+                <br>
+                <div class="modal-body">
+                    <div class="col-xs-12">
+                        <div class="col-xs-5">
+                            <img id="img1" src="static/img/randomtaichi.jpeg" class="img-rounded" height="150px" width="150px">
+                        </div>
+                        <div class="col-xs-7">
+                            Name: <b><p id="restaurant"></p></b>
+                            Location: <p id="address"></p>
+                                      <p id="citystate"></p>
+                            Phone: <p id="phone"></p>
+                        </div>
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ar btn-default" data-dismiss="modal">Oops, just kidding.</button>
+                    <button type="button" class="btn btn-ar btn-primary" id="confirm">I'm not a robot, please add it!</button>
+                </div>
+                </div>
             </div>
-            <div class="col-xs-7">
-              Name: <b><p id="restaurant"></p></b>
-              Location: <p id="address"></p>
-                        <p id="citystate"></p>
-              Phone: <p id="phone"></p>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-ar btn-default" data-dismiss="modal">Oops, just kidding.</button>
-            <button type="button" class="btn btn-ar btn-primary" id="confirm">I'm not a robot, please add it!</button>
-          </div>
+
         </div>
-      </div>
     </div>
 
       <!---Raise error message when user type random things that are neither usernames or restaurant names-->
-  </div>
-</div>
-  {% if exist_restaurants or exist_usernames %}
-    <div class="row">
-      <div class="col-md-12">
-        <div class="col-md-9">
-          <h2>Restaurants Which Match Your Search:</h2>
-          <hr>
-        {% for restaurant in exist_restaurants %}
-          <div class="col-md-4" id="fixed-div">
-          <a href="/search_restaurant/{{ restaurant.restaurant_id }}"><br>
-            <img src="{{ restaurant.image }}" class="img-rounded" height="150px" width="200px">
-            <br>{{ restaurant.name }}<br>
-          </a>
-          </div>
-        {% endfor %}
-      </div>
-      <div class="col-md-3">
-        <h3>Users Who Match Your Search:</h3>
-        {% for username in exist_usernames %}
-        <li>
-          <a href="/profile/{{ username.user_id }}">{{ username.username }}</a>
-        </li>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-  {% else %}
-  <div class="row">
-    <p>Sorry, we don't understand you. Please try again.</p>
-    <br>
-  </div>
-  {% endif %}
 
+    {% if exist_restaurants or exist_usernames %}
+
+    <div class="row">
+        <div class="box">
+            <div class="col-lg-12">
+                <hr>
+                <h2 class="intro-text text-center">
+                <strong>Users Who Match Your Search:</strong>
+                <hr>
+            {% for username in exist_usernames %}
+                <li>
+                  <a href="/profile/{{ username.user_id }}">{{ username.username }}</a>
+                </li>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="box">
+            <div class="col-lg-12">
+                <hr>
+                <h2 class="intro-text text-center">
+                <strong>Restaurants Which Match Your Search:</strong>
+                <hr>
+            {% for restaurant in exist_restaurants %}
+                <div class="col-md-4" id="fixed-div">
+                    <a href="/search_restaurant/{{ restaurant.restaurant_id }}"><br>
+                        <img src="{{ restaurant.image }}" class="img-rounded" height="200px" width="260px">
+                        <h5>{{ restaurant.name }}</h5>
+                    </a>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>   
+    {% else %}
+        <div class="row">
+            <div class="box">
+                <div class="col-lg-12">
+                    <hr>
+                    <h2 class="intro-text text-center">
+                    <strong>Sorry, we don't understand you. Please try again.</strong>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+        </div>
+    </div>
+</div>
       
 {% endblock %}

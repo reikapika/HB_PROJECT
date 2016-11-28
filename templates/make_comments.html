@@ -1,15 +1,22 @@
-{% extends "base.html" %}
-{% block head %}
-<link rel="stylesheet" href="static/make_comment.css">
-{% endblock %}
+{% extends "new_base.html" %}
 {% block content %}
-<div>
-  <form action="/comments/{{ restaurant_id }}" method="POST">
-    <h2>What do you think about this restaurant?</h2>
-    <div>
-      <textarea name="user-comment" rows="5" cols="60"></textarea>
+<div class="container">
+    <div class="row">
+        <div class="box">
+            <div class="col-lg-12 text-center">
+                <hr>
+                <h2 class="intro-text text-center">
+                    <strong>What do you think about this restaurant?</strong>
+                </h2>
+                <hr>
+                <form action="/comments/{{ restaurant_id }}" method="POST">
+                    <div>
+                        <textarea name="user-comment" rows="5" cols="60"></textarea>
+                    </div>
+                    <input type="submit" value="Post!">
+                </form>
+            </div>
+        </div>
     </div>
-    <input type="submit" value="Post!">
-  </form>
 </div>
 {% endblock %}

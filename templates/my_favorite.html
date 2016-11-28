@@ -1,29 +1,45 @@
-{% extends "base.html" %}
+{% extends "new_base.html" %}
 
 {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="box">
+            <div class="col-lg-12">
+                <hr>
+                {% if restaurants %}
+                <h2 class="intro-text text-center">
+                    <strong>Restaurants Marked as Favorites</strong>
+                </h2>
+                <hr>
+                
+                {% for restaurant in restaurants %}
+                <div class="col-md-4">
+                    <form action="/remove_favor/{{ restaurant.restaurant_id }}" method="POST">
+                          <a href="/search_restaurant/{{ restaurant.restaurant_id }}">
+                                <img src={{ restaurant.image }} class="img-rounded" width="250px" height="180px"><br>{{ restaurant.name }}</a>
+                         <span class="glyphicon glyphicon-trash"><input type="submit" value="Remove"></span>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+                {% else %}
 
-<h2>Restaurants Marked as Favorites</h2>
-{% if restaurants %}
-  <div class="col-md-12">
-    {% for restaurant in restaurants %}
-    <div class="col-md-4">
-      
-      <form action="/remove_favor/{{ restaurant.restaurant_id }}" method="POST">
-        <a href="/search_restaurant/{{ restaurant.restaurant_id }}">
-          <img src={{ restaurant.image }} class="img-rounded" width="250px" height="180px"><br>{{ restaurant.name }}
-        </a>
-        <span class="glyphicon glyphicon-trash"><input type="submit" value="Remove"></span>
-      </form>
+                <div class="row">
+                    <div class="box">
+                        <div class="col-lg-12">
+                            <hr>
+                            <h2 class="intro-text text-center">
+                                <strong>Your favorite list is empty.</strong>
+                            </h2>
+                            <hr>
+                            <img src="/static/img/randomtaichi.jpeg" class="img-rounded" height="300px" width="400px">
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-    {% endfor %}
-  </div>
-{% else %}
-  <div class="row">
-    <div class="col-md-10">
-      <h2>Your favorite list is empty.</h2>
-      <img src="/static/img/randomtaichi.jpeg" class="img-rounded" height="300px" width="400px">
-    </div>
-  </div>
-{% endif %}
+</div>
 
 {% endblock %}

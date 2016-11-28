@@ -1,22 +1,20 @@
 
-console.log('1');
-
 var map;
 var directionsDisplay;
 var directionsService;
-var selectedMode;
+
 
 function initMap() {
     
     directionsDisplay = new google.maps.DirectionsRenderer;
     directionsService = new google.maps.DirectionsService;
     map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 14,
           center: {lat: restLatlng.lat, lng: restLatlng.lng},
-          zoom: 12
     });
     
     directionsDisplay.setMap(map);
-    
+
 
     if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
@@ -25,12 +23,12 @@ function initMap() {
                  lat: position.coords.latitude,
                  lng: position.coords.longitude
       };
-    document.getElementById('mode').addEventListener('change', function() {
-
-      selectedMode = document.getElementById('mode').value;
+      
+      var selectedMode = document.getElementById('mode').value;
+    
     
 
-      directionsService.route({
+        directionsService.route({
             origin: pos,
             destination: restLatlng,
           // Note that Javascript allows us to access the constant
@@ -43,11 +41,32 @@ function initMap() {
           } else {
             window.alert('Directions request failed due to ' + status);
           }
+        });
+
+      document.getElementById('mode').addEventListener('change', function() {
+
+        var selectedMode = document.getElementById('mode').value;
+    
+    
+
+        directionsService.route({
+            origin: pos,
+            destination: restLatlng,
+          // Note that Javascript allows us to access the constant
+          // using square brackets and a string value as its
+          // "property."
+          travelMode: google.maps.TravelMode[selectedMode]
+        }, function(response, status) {
+          if (status == 'OK') {
+            directionsDisplay.setDirections(response);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+        });
       });
-    });
 
 
-      },function() {
+    },function() {
             handleLocationError(true, infoWindow, map.getCenter());
           });
     } else {
@@ -65,16 +84,6 @@ initMap();
                           'Error: Your browser doesn\'t support geolocation.');
   }
 
-
-
-
- // var infowindow = new google.maps.InfoWindow({
- //      content: contentString
-    // });
-
-    //   marker.addListener('click', function() {
-    //   infowindow.open(map, marker);
-    // });
 
 
   

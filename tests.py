@@ -39,11 +39,6 @@ class FlaskTestBasic(TestCase):
 
         self.assertEqual(get_sample_restaurant_by_cuisine(1).cuisine_id, query.cuisine_id)
 
-    def test_get_comments_by_restaurant(self):
-        """Test functionality of this helper function."""
-        query = Restaurant.query.filter_by(restaurant_id=1).first()
-        self.assertEqual(get_comments_by_restaurant(1).comments.restaurant_id, query.restaurant_id)
-
     def test_get_user_by_user_id(self):
         """Test functionality of this helper function."""
 

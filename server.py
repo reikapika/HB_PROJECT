@@ -29,21 +29,15 @@ DATA = {'grant_type': 'client_credentials',
 def index():
     """Homepage."""
 
-    restaurant_dict = {'japanese': get_sample_restaurant_by_cuisine(1),
-                       'chinese': get_sample_restaurant_by_cuisine(2),
-                       'korean': get_sample_restaurant_by_cuisine(3),
-                       'indian': get_sample_restaurant_by_cuisine(4),
-                       'vietnamese': get_sample_restaurant_by_cuisine(5),
-                       'thai': get_sample_restaurant_by_cuisine(6),
-                       'middle_east': get_sample_restaurant_by_cuisine(7)
-                       }
-    lst_of_restaurants = restaurant_dict.values()
-    for restaurant in lst_of_restaurants:
-        lst_of_comments = get_comments_by_restaurant(restaurant.restaurant_id)
+    cuisine_id = [1, 2, 3, 4, 5, 6, 7]
+    restaurants = []
+    for i in range(4):
+        cuisine = choice(cuisine_id)
+        restaurant = get_sample_restaurant_by_cuisine(cuisine)
+        restaurants.append(restaurant)
 
     return render_template("homepage.html",
-                           restaurants=restaurant_dict,
-                           comments=lst_of_comments)
+                           restaurants=restaurants)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -213,6 +207,7 @@ def call_yelp(restaurant_id):
     resp = requests.get(url=url+exist_rest.yelp_id, headers=headers)
     rest_info = resp.json()
     comments = Comment.query.filter_by(restaurant_id=restaurant_id).all()
+    ratings = Rating.query.filter_by(restaurant_id=restaurant_id).all()
     num_likes = exist_rest.num_like_calculator()
     try:
         target = db.session.query(Popularity).filter_by(user_id=session['current_user'], restaurant_id=restaurant_id).first()
@@ -222,6 +217,7 @@ def call_yelp(restaurant_id):
                                num_likes=num_likes,
                                exist_rest=exist_rest,
                                comments=comments,
+                               ratings=ratings,
                                target=target)
     except KeyError:
         target = db.session.query(Popularity).filter_by(restaurant_id=restaurant_id).first()
@@ -230,6 +226,7 @@ def call_yelp(restaurant_id):
                                num_likes=num_likes,
                                exist_rest=exist_rest,
                                comments=comments,
+                               ratings=ratings,
                                target=target)
 
 
@@ -304,20 +301,18 @@ def remove_comment():
         return jsonify(status="error")
 
 
-@app.route("/restaurant_list", methods=['POST'])
-def display_restaurant():
+@app.route("/restaurant_list/<cuisine>", methods=['GET'])
+def display_restaurant(cuisine):
     """This lists of all the restaurants of a selected cuisine type."""
 
-    user_input = request.form["cuisine-type"]
-
-    selected_cuisine = Cuisine.query.filter_by(type=user_input).first()
+    selected_cuisine = Cuisine.query.filter_by(type=cuisine).first()
     results = selected_cuisine.restaurants
     names = []
     for i in results:
         names.append(i.name)
 
     return render_template("restaurant_list.html",
-                           cuisine=user_input,
+                           cuisine=cuisine,
                            results=results)
 
 
@@ -457,21 +452,6 @@ def get_sample_restaurant_by_cuisine(cuisine_id):
 
     query = Restaurant.query.filter_by(cuisine_id=cuisine_id).all()
     result = choice(query)
-    return result
-
-
-def get_comments_by_restaurant(restaurant_id):
-    """Get a random comment for restaurant passed in the parameter."""
-
-    query = Restaurant.query.filter_by(restaurant_id=restaurant_id).first()
-    lst_of_comments = query.restaurant
-    try:
-        result = choice(lst_of_comments)
-    except IndexError:
-        result = Comment(user_id=2,
-                         restaurant_id=restaurant_id,
-                         comment="This restaurant is wonderful!!")
-
     return result
 
 

@@ -1,66 +1,107 @@
-{% extends "base.html" %}
+{% extends "new_base.html" %}
 
 {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="box">
+            <div class="col-lg-12">
+                <hr>
+                <h2 class="intro-text text-center">
+                    <strong>Restaurant Information</strong>
+                </h2>
+                <hr>
+                <div class="col-md-4">
+                    <h3>{{ rest_info.name }}</h3>
+                    <h5>Likes: <span id="num_likes">{{ num_likes }}</span></h5>
+                    <h5>Category: {{ rest_info['categories'][0]['title'] }}</h5>
+                    <h5>Phone: {{ rest_info.phone }}</h5>
+                    <h5>Price Level: {{ rest_info.price }}</h5>
+                    <h5>Hours: 
+                      {{ rest_info['hours'][0]['open'][0]['start']}} 
+                      - {{ rest_info['hours'][0]['open'][0]['end']}}</h5>
+                    <h5>Location: 
+                      {{ rest_info['location']['address1'] }}<br>
+                      {{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }} 
+                      {{ rest_info['location']['zip_code'] }}</h5><br>  
+                    {% if "current_user" in session %}
+                    <br>
+                    <button id="like-it" value="{{ exist_rest.restaurant_id}}">
+                    {% if target %}
+                        <span id="like">Unlike</span>
+                    {% else %}
+                        <span id="like">Like</span>
+                    {% endif %}
+                    </button>
+                <div class="alert alert-info" id="fake-flash" hidden></div>
+                    {% endif %}
+                </div>
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="col-md-3">
-      <b>Restaurant Information</b><br>
-      <h2>{{ rest_info.name }}</h2>
-      Likes: <span id="num_likes">{{ num_likes }}</span><br>
-      Category: {{ rest_info['categories'][0]['title'] }}<br>
-      Phone: {{ rest_info.phone }}<br>
-      Price Level: {{ rest_info.price }}<br>
-      Hours: 
-        {{ rest_info['hours'][0]['open'][0]['start']}} 
-        - {{ rest_info['hours'][0]['open'][0]['end']}}<br>
-      Location: 
-        {{ rest_info['location']['address1'] }}<br>
-        {{ rest_info['location']['city'] }}, {{ rest_info['location']['state'] }} 
-        {{ rest_info['location']['zip_code'] }}<br>  
-      {% if "current_user" in session %}
-      <br>
-      <button id="like-it" value="{{ exist_rest.restaurant_id}}">
-        {% if target %}
-        <span id="like">Unlike</span>
-        {% else %}
-        <span id="like">Like</span>
-        {% endif %}
-      </button>
-      <div class="alert alert-info" id="fake-flash" hidden>
-      </div>
-       {% endif %}
+                <div class="col-md-4">
+                    <br>
+                    {% if "current_user" in session %}
+                    <button id="fav-restaurant" class="favorite-btn" value="{{ exist_rest.restaurant_id}}">&hearts; Add to Favorite</button><br>
+                    <a href="/comments/{{ exist_rest.restaurant_id }}">New Comment</a>
+                    <br>
+                    <a href="/ratings/{{ exist_rest.restaurant_id }}">New Rating</a>
+                    {% endif %}
+                    <br>
+                    <br>
+                    <img id="restaurant-pic" src={{ rest_info['image_url'] }} class="img-rounded" width="200px" height="150px">
+                </div>
+
+                {% if ratings %}
+                <div class="col-md-4">
+                    <h3>Restaurant Ratings</h3>
+                    {% for rating in ratings %}
+                        <h4>Cleanliness: {{ rating.cleanliness }}</h4>
+                        <h4>Cleanliness: {{ rating.cleanliness }}</h4>
+                        <h4>Quality: {{ rating.quality }}</h4>
+                        <h4>Atmosphere: {{ rating.atmosphere }}</h4>
+                        <h4>Consistency: {{ rating.consistency }}</h4>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-      <br>
-      {% if "current_user" in session %}
-      <button id="fav-restaurant" class="favorite-btn" value="{{ exist_rest.restaurant_id}}">&hearts; Add to Favorite</button><br>
-      <a href="/comments/{{ exist_rest.restaurant_id }}">New Comment</a>
-      <br>
-      <a href="/ratings/{{ exist_rest.restaurant_id }}">New Rating</a>
-      {% endif %}
-      <br>
-      <br>
-      <img id="restaurant-pic" src={{ rest_info['image_url'] }} class="img-rounded" width="200px" height="150px">
+    <div class="row">
+        <div class="box">
+            <div class="col-lg-12">
+                <div id="map"></div>
+                    <div id="floating-panel" class="col-lg-3">
+                        <b>Mode of Travel: </b>
+                        <select id="mode">
+                            <option value="DRIVING">Driving</option>
+                            <option value="WALKING">Walking</option>
+                            <option value="BICYCLING">Bicycling</option>
+                            <option value="TRANSIT">Transit</option>
+                        </select>
+                    </div>
+            </div>
+        </div>
     </div>
-<hr>
-    
-    <div id="map" class="col-md-4"></div>
-    <div id="floating-panel" class="col-md-4">
-    <b>Mode of Travel: </b>
-    <select id="mode">
-      <option value="DRIVING">Driving</option>
-      <option value="WALKING">Walking</option>
-      <option value="BICYCLING">Bicycling</option>
-      <option value="TRANSIT">Transit</option>
-    </select>
+
+    <div class="row">
+        <div class="box">
+            <div class="col-lg-12">
+                <hr>
+                <h2 class="intro-text text-center">
+                    <strong>Restaurant Comments</strong>
+                </h2>
+                <hr>
+               <b>Comments from Users:</b>
+                {% for comment in comments %}
+                <br><b><a href="/profile/{{ comment.user.user_id }}">{{ comment.user.username }}</a></b> - {{ comment.comment }}
+                {% if comment.num_like_calculator() %}
+                  <span>{{ comment.num_like_calculator() }}</span>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-  
 
-
-  <!---Google Map CSS-->
+<!---Google Map CSS-->
     <style>
       #map {
         height: 300px;
@@ -102,23 +143,5 @@
       ;
 
     </script>
-
-
-
-  <br>
-  <br>
-  <div class="row">
-    <div class="col-md-12">
-       <b>Comments from Users:</b>
-        {% for comment in comments %}
-        <br><b><a href="/profile/{{ comment.user.user_id }}">{{ comment.user.username }}</a></b> - {{ comment.comment }}
-        {% if comment.num_like_calculator() %}
-          <span>{{ comment.num_like_calculator() }}</span>
-        {% endif %}
-        {% endfor %}
-    </div>
-  </div>
-</div>  
-
 {% endblock %}
 

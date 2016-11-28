@@ -1,21 +1,26 @@
-{% extends "base.html" %}
+{% extends "new_base.html" %}
 {% block content %}
-
-<h3>Your favorite {{ cuisine }} Restaurants!</h3>
-<hr>
-<div class="row">
-  <div class="col-md-12">
-    {% for restaurant in lookup %}
-    <div class="col-md-4">
-      <form action="/remove_favor/{{ restaurant.restaurant_id }}" method="POST">
-        <a href="/search_restaurant/{{ restaurant.restaurant_id }}">
-          <img src={{ restaurant.image }} class="img-rounded" width="250px" height="180px"><br>{{ restaurant.name }}
-        </a>
-      </form>
-      <br>
+<div class="container">
+    <div class="row">
+        <div class="box">
+            <h3>Your favorite {{ cuisine }} Restaurants!</h3>
+            <hr>
+            <div class="row">
+              <div class="col-md-12">
+                {% for restaurant in lookup %}
+                <div class="col-md-4">
+                  <form action="/remove_favor/{{ restaurant.restaurant_id }}" method="POST">
+                    <a href="/search_restaurant/{{ restaurant.restaurant_id }}">
+                      <img src={{ restaurant.image }} class="img-rounded" width="250px" height="180px"><br>{{ restaurant.name }}
+                    </a>
+                  </form>
+                  <br>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+        </div>
     </div>
-    {% endfor %}
-  </div>
 </div>
 
 {% endblock %}}
