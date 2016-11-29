@@ -11,7 +11,7 @@
                 <hr>
                 <div class="col-lg-6">
                     <p><a href="/list_favlist/{{ user.user_id }}">My Favorites</a></p>
-                    <p>Last Login: {{ user.last_login }}</p>
+                    <p>Last Login: {{ last_login }}</p>
                     <p>Name: <b>{{ user.fname }} {{ user.lname }}</b></p>
                     <p>Username: <b>{{ user.username }}</b></p>
                     <p>Favorite Cuisine: <a href="/lookup_cuisine">{{ user.fav_cuisine }}</a></p>
@@ -37,7 +37,7 @@
                     <div class="col-lg-6" style="height: 200px;">
                         <hr>
                         <div class="col-lg-4">
-                            <h6>Restaurant: {{ r.restaurant.name }}</h6>
+                            <strong>{{ r.restaurant.name }}</strong>
                             <h6>Cleanliness: {{ r.cleanliness }}</h6>
                             <h6>Quality: {{ r.quality }}</h6>
                             <h6>Atmosphere: {{ r.atmosphere }}</h6>

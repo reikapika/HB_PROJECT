@@ -103,6 +103,12 @@ hr {
 
 }
 
+#myCarousel img {
+  padding: 15px;
+  height: 635px;
+  width: 1140px;
+}
+
 .img-border {
     float: none;
     margin: 0 auto 0;
