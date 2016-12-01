@@ -18,26 +18,27 @@ jQuery
 AJAX
 
 ###Homepage
-<img align="center" src="/static/screenshots/home.gif" width="500">
+<img align="center" src="/static/screenshot/home.gif" width="500">
 
 -Randomly selected restaurants and comments will display in a bootstrap carousel on every page load
 
 ###Search Feature can look up both restaurants and users
-<img align="center" src="/static/screenshots/search.png" width="500">
+<img align="center" src="/static/screenshot/search.png" width="500">
 
 -Look up users and check out their profile page (only for logged in users)
 -Hyperlinks for all restaurants and direct to the restaurant info page
 
 
 ###Restaurant Info
-<img align="center" src="/static/screenshots/restaurant_info.png" width="500">
-<img align="center" src="/static/screenshots/map.png" width="500">
+<img align="center" src="/static/screenshot/restaurant_info.png" width="500">
+<img align="center" src="/static/screenshot/map.png" width="500">
 
 -On every page load, the server will make two API calls: first one to Yelp for most up to date business information, and then to Google for a brief direction from the user location (obtained by HTML 5 Geolocation) to the restaurant.
 -All comments of the restaurant are results of a query in the database using the table relationship
 
 ###User Profile
-<img align="center" src="/static/screenshots/profile.png" width="500">
+<img align="center" src="/static/screenshot/profile.png" width="500">
+
 -Keep track of last log in time and user favorites
 -Detail history of each rating the user has given
 -Users can delete the comments they have made 
@@ -83,7 +84,7 @@ Go to `localhost:5000` in your browser to start exploring!
 
 -Currently the coverage is 58%.
 
-<img align="center" src="/static/screenshots/coverage.png" width="500">
+<img align="center" src="/static/screenshot/coverage.png" width="500">
 
 To run tests, run the following command line:
 
