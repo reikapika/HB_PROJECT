@@ -206,8 +206,8 @@ def load_fake_data():
     db.session.commit()
 
 
-def connect_to_db(app, db_uri="postgresql:///pocketasia"):
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+def connect_to_db(app, db_uri):
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri or "postgresql:///pocketasia"
     db.app = app
     db.init_app(app)
 
