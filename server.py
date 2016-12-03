@@ -14,15 +14,20 @@ CUISINE = ['Japanese', 'Chinese', 'Korean', 'Indian', 'Vietnamese', 'Thai', 'Mid
 #Settting up the back end routes.
 app = Flask(__name__)
 
-app.secret_key = "key"
+app.secret_key = os.environ.get("SECRET_KEY", "key")
 app.jinja_env.undeined = StrictUndefined
 
 
-APP_ID = os.environ['YELP_CONSUMER_KEY']
+APP_ID = os.environ.get('YELP_CONSUMER_KEY')
 APP_SECRET = os.environ['YELP_CONSUMER_SECRET']
 DATA = {'grant_type': 'client_credentials',
         'client_id': APP_ID,
         'client_secret': APP_SECRET}
+
+
+@app.route("/error")
+def error():
+    raise Exception("Error!")
 
 
 @app.route("/")
@@ -466,11 +471,13 @@ if __name__ == "__main__":
     # Do not debug for demo
     app.debug = False
 
-    connect_to_db(app)
+    connect_to_db(app, os.environ.get("DATABASE_URL"))
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)
 
+    DEBUG = "NO_DEBUG" not in os.environ
+
     PORT = int(os.environ.get("PORT", 5000))
 
-    app.run(host="0.0.0.0", port=PORT)
+    app.run(host="0.0.0.0", port=PORT, debug=DEBUG)
