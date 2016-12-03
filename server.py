@@ -466,7 +466,6 @@ def get_user_by_username(username):
 
 if __name__ == "__main__":
 
-    # Do not debug for demo
     app.debug = False
 
     connect_to_db(app, os.environ.get("DATABASE_URL"))
