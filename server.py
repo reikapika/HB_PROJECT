@@ -19,7 +19,7 @@ app.jinja_env.undeined = StrictUndefined
 
 
 APP_ID = os.environ.get('YELP_CONSUMER_KEY')
-APP_SECRET = os.environ['YELP_CONSUMER_SECRET']
+APP_SECRET = os.environ.get('YELP_CONSUMER_SECRET')
 DATA = {'grant_type': 'client_credentials',
         'client_id': APP_ID,
         'client_secret': APP_SECRET}
@@ -465,8 +465,6 @@ def get_user_by_username(username):
 
 
 if __name__ == "__main__":
-    # We have to set debug=True here, since it has to be True at the point
-    # that we invoke the DebugToolbarExtension
 
     # Do not debug for demo
     app.debug = False
