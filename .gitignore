@@ -1,3 +1,10 @@
 venv
 *pyc
 secret.sh
+.DS_Store
+api.py
+testing strategies.txt
+*.sql
+data/
+.coverage
+htmlcov/
